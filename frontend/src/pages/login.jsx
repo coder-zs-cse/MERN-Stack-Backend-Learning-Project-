@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
+
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
@@ -14,12 +16,19 @@ const Login = () => {
         `${backendURL}/api/v1/user/login`,
         data
       );
-      const token = response.data.data.token;
-      localStorage.setItem("token", token);
-      navigate("/home");
+      if(response.data.success == true){
+        const token = response.data.data.token;
+        localStorage.setItem("token", token);
+        toast.success('Logged in successfully')
+        toast('Redirecting to home page')
+        navigate('/home')
+      }
+      else{
+        toast.error(response.data.message)
+      }
     } catch (err) {
       console.log(err);
-      navigate("/home");
+      toast.error(err)      
     }
   }
   return (

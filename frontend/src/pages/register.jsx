@@ -1,19 +1,31 @@
 import React from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 const backendURL = import.meta.env.VITE_BACKEND_URL
+import toast from 'react-hot-toast';
 
 const Register = () => {
+  const navigate = useNavigate()
 
   async function handleSubmit(event){
+    console.log("jii");
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = {...Object.fromEntries(formData.entries())};
     try{
       const response = await axios.post(`${backendURL}/api/v1/user/register`, data);
       console.log(response);
-
+      if(response.data.success ==true){
+        toast.success('User created successfully')
+        toast('Redirecting to home page')
+        navigate("/login");
+      }
+      else{
+        toast.error(response.data.message)
+      }
     }
     catch(err){
+      toast.error(err)
       console.log(err);
     }
   }

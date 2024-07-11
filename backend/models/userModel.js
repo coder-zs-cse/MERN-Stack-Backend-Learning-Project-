@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false, // New users are not admins by default
+    },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     passwordChangedAt: { type: Date },
@@ -25,17 +29,20 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.createResetPasswordToken = function () {
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
-    return resetToken
-}
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+  return resetToken;
+};
 
-userSchema.methods.resetPassword = function(password) {
-    this.password = password
-    this.resetPasswordToken = undefined
-    this.resetPasswordExpires = undefined
-}
+userSchema.methods.resetPassword = function (password) {
+  this.password = password;
+  this.resetPasswordToken = undefined;
+  this.resetPasswordExpires = undefined;
+};
 
 const userModel = mongoose.model("users", userSchema);
 

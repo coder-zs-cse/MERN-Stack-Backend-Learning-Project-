@@ -7,7 +7,8 @@ import { RiMenuLine, RiCloseLine } from "react-icons/ri";
 function Layout({ children }) {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
-  const menuToBeRendered = user?.role === "teacher" ? teacherMenu : userMenu;
+  console.log(user);
+  const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);

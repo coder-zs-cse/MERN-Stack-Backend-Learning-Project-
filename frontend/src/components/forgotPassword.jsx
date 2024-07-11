@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function ForgotPassword() {
@@ -21,12 +22,15 @@ function ForgotPassword() {
             },
           }
         );
-        if (response.ok) {
+        if (response.data.success === true) {
+          toast.success("Password reset link sent to your email");
           console.log("Password reset link sent");
         } else {
+          toast.error(response.data.message);
           console.log("Error sending password reset link");
         }
       } catch (error) {
+        toast.error("Server error");
         console.log(error);
       }
   };

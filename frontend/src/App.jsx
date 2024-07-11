@@ -10,18 +10,19 @@ import { Register } from "./pages/register.jsx";
 import { ProtectedRoute } from "./components/protectedRoute.jsx";
 import { PublicRoutes } from "./components/publicRoute.jsx";
 import ForgotPassword from "./components/forgotPassword.jsx";
+import { Toaster } from "react-hot-toast";
 import Landing from "./pages/landing.jsx";
 import Profile from "./pages/profile.jsx";
+import Temp from "./pages/temp.jsx";
+import ResetPassword from "./components/resetPassword.jsx";
+import Users from "./pages/admin/users.jsx";
 function App() {
   return (
     <>
       <BrowserRouter>
+        <Toaster position="top-center" reverseOrder={false} />
         <Routes>
-        <Route path='/'
-          element={
-            <Landing />
-          }
-        />
+          <Route path="/" element={<Landing />} />
           <Route
             path="/home"
             element={
@@ -51,10 +52,26 @@ function App() {
             }
           />
           <Route
+            path="/temp"
+            element={
+              <PublicRoutes>
+                <Temp />
+              </PublicRoutes>
+            }
+          />
+          <Route
             path="/forgot-password"
             element={
               <PublicRoutes>
                 <ForgotPassword />
+              </PublicRoutes>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <PublicRoutes>
+                <ResetPassword />
               </PublicRoutes>
             }
           />
@@ -64,6 +81,16 @@ function App() {
               <PublicRoutes>
                 <Register />
               </PublicRoutes>
+            }
+          />
+          <Route
+            path="/teacher/users"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Users />
+                </Layout>
+              </ProtectedRoute>
             }
           />
         </Routes>

@@ -30,8 +30,8 @@ const adminMenu = [
         icon: 'ri-home-line mt-auto mb-auto'
     },
     {
-        name: 'My Appointments',
-        path: '/teacher/appointments',
+        name: 'Users',
+        path: '/teacher/users',
         icon: 'ri-file-list-line mt-auto mb-auto'
     },
     {
