@@ -1,0 +1,3 @@
+- Run frontend by npm install; npm run dev
+- Run backend by npm install, nodemon server
+- Build tailwind by npx tailwindcss -i ./src/index.css -o ./src/output.css --watch
