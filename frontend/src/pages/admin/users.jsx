@@ -4,6 +4,9 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import UserCard from "../../components/admin/userCard";
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+
 function Users() {
   const { user } = useSelector((state) => state.user);
   const [usersList, setUsersList] = useState([]);
@@ -12,35 +15,39 @@ function Users() {
   const getUsersList = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/v1/admin/get-list-of-users`,
+        `${backendURL}/api/v1/admin/get-list-of-users`,
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
         }
       );
-      console.log("response: ",response.data);
-    const data = response.data      
+      // console.log("response: ",response.data);
+      const data = response.data;
       if (data.success) {
         // setIsLoading(false);
         // console.log("mydata: ", data.data);
         setUsersList(data.data);
-        console.log("data: ",data.data);
+        console.log("data: ", data.data);
       } else {
         // setIsLoading(false);
         navigate("/home");
       }
     } catch (error) {
-    //   setIsLoading(false);
-    //   navigate("/");
+      //   setIsLoading(false);
+      //   navigate("/");
     }
   };
   useEffect(() => {
     getUsersList();
   }, []);
   return (
-    <div>Users List</div>
-  )
+    <div className="flex flex-wrap">
+      {usersList.map((user) => {
+        return <UserCard id={user?.id} name={user?.name} email={user?.email} isAdmin={user?.isAdmin} getUsers={getUsersList}/>;
+      })}
+    </div>
+  );
 }
 
 export default Users;

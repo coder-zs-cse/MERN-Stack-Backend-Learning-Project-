@@ -35,3 +35,29 @@ exports.getListOfUsers = async (req, res) => {
     });
   }
 };
+
+
+exports.deleteUserController = async (req, res) => {
+
+  try {
+    let Model = User;
+    const user = await Model.findById(req.params.id);
+    if (!user) {
+      return res.status(200).send({
+        message: "No user found",
+        success: false,
+      });
+    } else {
+      await Model.deleteOne({ _id: req.params.id });
+      return res.status(200).send({
+        success: true,
+        message: "User deleted successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error deleting user",
+      success: false,
+    });
+  }
+}
