@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
+import { GoogleLogin } from "@react-oauth/google";
 
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,20 +17,36 @@ const Login = () => {
         `${backendURL}/api/v1/user/login`,
         data
       );
-      if(response.data.success == true){
+      if (response.data.success == true) {
         const token = response.data.data.token;
         localStorage.setItem("token", token);
-        toast.success('Logged in successfully')
-        toast('Redirecting to home page')
-        navigate('/home')
-      }
-      else{
-        toast.error(response.data.message)
+        toast.success("Logged in successfully");
+        toast("Redirecting to home page");
+        navigate("/home");
+      } else {
+        toast.error(response.data.message);
       }
     } catch (err) {
       console.log(err);
-      toast.error(err)      
+      toast.error(err);
     }
+  }
+  async function handleLoginSuccess(credentialResponse) {
+    try {
+      const response = await axios.post(
+        `${backendURL}/api/v1/user/auth/google`,
+        {
+          token: credentialResponse.credential,
+        }
+      );
+      console.log(response.data.data.token);
+      localStorage.setItem("token", response.data.data.token);
+      navigate("/home");
+    } catch (err) {
+      console.log(err);
+    }
+    // Handle the server response
+    // e.g., save user info to state, redirect, etc.
   }
   return (
     <div className="min-h-screen flex item-center justify-center bg-gray-100">
@@ -66,21 +83,29 @@ const Login = () => {
           >
             Sign in
           </button>
-          <div className="flex ">
-            <a
-              href="/forgot-password"
-              className="mt-2 text-sm text-indigo-600 hover:text-indigo-500"
-            >
-              Forgot password?
-            </a>
-            <p className="mt-2 ml-auto text-center text-sm text-gray-600">
+          <div className="flex flex-col items-center">
+            <div className="my-2 px-2 w-full flex justify-between flex-wrap ">
               <a
-                href="/register"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                href="/forgot-password"
+                className=" text-sm text-indigo-600 hover:text-indigo-500"
               >
-                Don't have an account? Register
+                Forgot password?
               </a>
-            </p>
+              <p className="ml-auto inline-block text-sm text-gray-600">
+                <a
+                  href="/register"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  Don't have an account? Register
+                </a>
+              </p>
+            </div>
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
           </div>
         </form>
       </div>

@@ -13,11 +13,18 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.authProvider === "local";
+      },
     },
     isAdmin: {
       type: Boolean,
       default: false, // New users are not admins by default
+    },
+    authProvider: {
+      type: String,
+      required: true,
+      enum: ["local", "google"],
     },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },

@@ -4,6 +4,10 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
 const crypto = require("crypto");
 
+const { OAuth2Client } = require("google-auth-library");
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 const signToken = async (id) => {
   const token = await jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -63,7 +67,9 @@ exports.loginController = async (req, res) => {
       });
     }
     const token = await signToken(user._id);
-    res.status(200).send({ message: "Login Successfull", success: true, data: { token } });
+    res
+      .status(200)
+      .send({ message: "Login Successfull", success: true, data: { token } });
   } catch (error) {
     res.status(500).send({ message: "Server error", success: false, error });
   }
@@ -93,7 +99,6 @@ exports.forgotPasswordController = async (req, res) => {
     const message = `We received a request to reset your password for your account associated with this email address. If you made this request, please click on the link below to reset your password: \n\n ${resetUrl} \n\n If you did not request a password reset, please ignore this email. Your password will remain unchanged.`;
 
     try {
-
       await sendEmail({
         email: user.email,
         subject: "Password Reset Link",
@@ -120,7 +125,7 @@ exports.resetPasswordController = async (req, res) => {
       .createHash("sha256")
       .update(req.body.token)
       .digest("hex");
-      // console.log(token,req.body.token);
+    // console.log(token,req.body.token);
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() },
@@ -138,15 +143,49 @@ exports.resetPasswordController = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     user.passwordChangedAt = Date.now();
-    
+
     await user.save();
 
     const jwtToken = await signToken(user._id);
-    res.status(200).send({ message: "Password Reset Successfully", success: true, data: { token:jwtToken } });
+    res.status(200).send({
+      message: "Password Reset Successfully",
+      success: true,
+      data: { token: jwtToken },
+    });
     // const user
-  } catch (err) {
-
-  }
+  } catch (err) {}
 };
 
+exports.googleLoginController = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
 
+    const { email, name } = ticket.getPayload();
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        email,
+        name,
+        authProvider: "google",
+      });
+      await user.save();
+    }
+    // Generate JWT or session for the user
+    const jwtToken = await signToken(user._id);
+    res.status(200).send({
+      message: "Google Signin successfull",
+      success: true,
+      data: { token: jwtToken },
+    });
+  } catch (error) {
+    console.error("Error verifying Google token:", error);
+    res.status(401).json({ error: "Authentication failed" });
+  }
+};

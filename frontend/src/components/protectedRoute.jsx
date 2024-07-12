@@ -25,9 +25,11 @@ function ProtectedRoute(props){
                 // console.log(data.data);
                  await dispatch(setUser(data.data))
             }else{
+                localStorage.removeItem('token')
                 navigate('/login')
             }
         }catch(error){
+            localStorage.removeItem('token')
             navigate('/login')
         }
     }
