@@ -40,7 +40,7 @@ const Register = () => {
           token: accessToken,
         }
       );
-      console.log("token: ", response.data.data.token);
+      // console.log("token: ", response.data.data.token);
       localStorage.setItem("token", response.data.data.token);
       navigate("/home");
     } catch (err) {

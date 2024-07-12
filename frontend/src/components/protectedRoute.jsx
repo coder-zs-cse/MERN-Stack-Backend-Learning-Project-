@@ -5,6 +5,7 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 import { useEffect } from "react";
 
 function ProtectedRoute(props) {
+    
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,13 +29,13 @@ function ProtectedRoute(props) {
         navigate("/login");
       }
     } catch (error) {
-      dispatch(setUser(null));
       localStorage.removeItem("token");
       navigate("/login");
     }
   }
   useEffect(() => {
-    // if (user && !localStorage.getItem("token")) {
+    // if(!localStorage.getItem("token") && user){
+    //     dispatch(setUser(null));
     // }
     if (!user) {
       getUser();

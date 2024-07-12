@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 
 function Profile() {
   const { user } = useSelector((state) => state.user);
+0
+  
   // console.log(user);
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">

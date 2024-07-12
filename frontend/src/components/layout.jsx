@@ -3,12 +3,13 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { userMenu, adminMenu } from "../data/menu";
 import { RiMenuLine, RiCloseLine } from "react-icons/ri";
+import { setUser } from "../redux/userSlice";
+
 function Layout({ children }) {
   const dispatch = useDispatch()
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
-  console.log(user);
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
 
   const handleToggleSidebar = () => {
@@ -57,7 +58,7 @@ function Layout({ children }) {
               className="flex"
               onClick={async () => {
                 localStorage.clear();
-                
+                dispatch(setUser(null));
               }}
             >
               <i className="ri-logout-box-r-line self-center"></i>
