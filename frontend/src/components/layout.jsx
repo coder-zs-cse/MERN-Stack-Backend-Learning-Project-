@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userMenu, adminMenu } from "../data/menu";
 import { RiMenuLine, RiCloseLine } from "react-icons/ri";
-
 function Layout({ children }) {
+  const dispatch = useDispatch()
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
   console.log(user);
@@ -18,22 +19,21 @@ function Layout({ children }) {
   const handleMediaQueryChange = (event) => {
     setIsSidebarCollapsed(event.matches); // Collapse sidebar on small screens
   };
-  
+
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)"); // Adjust breakpoint as needed
     mediaQuery.addListener(handleMediaQueryChange);
-  
+
     // Cleanup function to remove event listener on unmount
     return () => mediaQuery.removeListener(handleMediaQueryChange);
-  }, []);
-  
+  }, [user]);
 
   return (
     <div className="main h-screen p-3">
       <div className="flex h-full">
         <div
           className={`sidebar bg-blue-500 rounded mr-3 p-3 w-64 overflow-hidden transition duration-200 ease-in-out ${
-            isSidebarCollapsed ? 'hidden md:block' : 'block'
+            isSidebarCollapsed ? "hidden md:block" : "block"
           }`} // Tailwind classes for responsiveness
         >
           <div className="flex justify-center items-center border-b border-white/20">
@@ -53,16 +53,27 @@ function Layout({ children }) {
                 </Link>
               </div>
             ))}
-            <div className="flex" onClick={() => localStorage.clear()}>
+            <div
+              className="flex"
+              onClick={async () => {
+                localStorage.clear();
+                
+              }}
+            >
               <i className="ri-logout-box-r-line self-center"></i>
-              <Link to="/login" className="text-white ml-2 no-underline mb-3 mt-3">
+              <Link
+                to="/login"
+                className="text-white ml-2 no-underline mb-3 mt-3"
+              >
                 Logout
               </Link>
             </div>
           </div>
           <button
             className={`transition duration-200 ease-in-out absolute top-0 left-0 mt-4 ml-4 p-2 rounded-full focus:outline-none ${
-              isSidebarCollapsed ? 'bg-blue-500 text-white' : 'bg-gray-200 text-blue-500'
+              isSidebarCollapsed
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-blue-500"
             }`}
             onClick={handleToggleSidebar}
           >

@@ -24,10 +24,10 @@ function ForgotPassword() {
         );
         if (response.data.success === true) {
           toast.success("Password reset link sent to your email");
-          console.log("Password reset link sent");
+          // console.log("Password reset link sent");
         } else {
           toast.error(response.data.message);
-          console.log("Error sending password reset link");
+          // console.log("Error sending password reset link");
         }
       } catch (error) {
         toast.error("Server error");

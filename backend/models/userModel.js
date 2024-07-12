@@ -24,8 +24,9 @@ const userSchema = new mongoose.Schema(
     authProvider: {
       type: String,
       required: true,
-      enum: ["local", "google"],
+      enum: ["local", "google", 'facebook'],
     },
+    facebookId: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     passwordChangedAt: { type: Date },

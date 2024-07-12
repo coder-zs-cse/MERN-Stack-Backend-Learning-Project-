@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
 const crypto = require("crypto");
-
+const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -163,7 +163,6 @@ exports.googleLoginController = async (req, res) => {
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
     const { email, name } = ticket.getPayload();
 
     let user = await User.findOne({ email });
@@ -177,6 +176,7 @@ exports.googleLoginController = async (req, res) => {
       });
       await user.save();
     }
+    // console.log("user",user);
     // Generate JWT or session for the user
     const jwtToken = await signToken(user._id);
     res.status(200).send({
@@ -188,4 +188,42 @@ exports.googleLoginController = async (req, res) => {
     console.error("Error verifying Google token:", error);
     res.status(401).json({ error: "Authentication failed" });
   }
+};
+
+exports.facebookLoginController = async (req, res) => {
+  const { token } = req.body;
+  try {
+    // Verify the Facebook access token
+    const response = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${token}`);
+    // console.log(response);
+    const { id, name, email } = response.data;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+    
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        email,
+        name,
+        authProvider: 'facebook',
+        facebookId: id,
+      });
+      await user.save();
+    }
+    
+    // Generate JWT or session for the user
+    const jwtToken = await signToken(user._id);
+    res.status(200).send({
+      message: "Facebook Signin successfull",
+      success: true,
+      data: { token: jwtToken },
+    });
+  } catch (error) {
+    console.error('Error verifying Facebook token:', error);
+    res.status(401).json({ error: 'Authentication failed' });
+  }
+
+    // Generate JWT or session for the user
+  
 };
