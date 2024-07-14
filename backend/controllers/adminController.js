@@ -36,9 +36,7 @@ exports.getListOfUsers = async (req, res) => {
   }
 };
 
-
 exports.deleteUserController = async (req, res) => {
-
   try {
     let Model = User;
     const user = await Model.findById(req.params.id);
@@ -60,4 +58,61 @@ exports.deleteUserController = async (req, res) => {
       success: false,
     });
   }
-}
+};
+
+exports.updateUserController = async (req, res) => {
+  try {
+    let Model = User;
+    const user = await Model.findById(req.params.id);
+    if (!user) {
+      return res.status(200).send({
+        message: "No user found",
+        success: false,
+      });
+    } else {
+      user.isAdmin = req.body.isAdmin;
+      await user.save();
+      return res.status(200).send({
+        success: true,
+        message: "User updated successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error updating user",
+      success: false,
+    });
+  }
+};
+
+exports.newDefaultUserController = async (req, res) => {
+  try {
+    const { email, isAdmin } = req.body;
+    const Model = User;
+    const userExist = await Model.findOne({ email });
+    if (userExist) {
+      return res.status(200).send({
+        message: "User with same email already exists",
+        success: false,
+      });
+    }
+    // console.log("broo");
+    defaultPassword = "password";
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+
+    const newUser = new Model({
+      email,
+      password: hashedPassword,
+      isAdmin,
+      authProvider: "local",
+    });
+    await newUser.save();
+    // // console.log("Working");
+    res
+      .status(200)
+      .send({ message: "User created successfully", success: true });
+  } catch (error) {
+    res.status(500).send({ message: "Server error", success: false });
+  }
+};

@@ -70,9 +70,7 @@ function App() {
           <Route
             path="/reset-password/:token"
             element={
-              <PublicRoutes>
                 <ResetPassword />
-              </PublicRoutes>
             }
           />
           <Route

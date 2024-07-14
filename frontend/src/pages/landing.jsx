@@ -16,7 +16,7 @@ function Landing() {
         <div className="container mx-auto flex justify-between items-center ">
           <div className="text-white font-bold text-xl flex">
             <img src="./logo.png" alt="Logo" className="h-8" /> 
-            <span className='ml-2'> Software Solutions </span>
+            <span className='ml-2 click'> Software Solutions </span>
           </div>
           <ul className="flex space-x-4">
             <li><a href="#" className="text-white hover:text-blue-200">Home</a></li>

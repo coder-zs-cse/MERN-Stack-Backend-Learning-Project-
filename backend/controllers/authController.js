@@ -57,6 +57,12 @@ exports.loginController = async (req, res) => {
         .status(200)
         .send({ message: "User does not exists", success: false });
     }
+    if(user.authProvider === 'google' || user.authProvider === 'facebook'){
+      return res.status(200).send({
+        message: "User signed up with google or facebook",
+        success: false,
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     // console.log(req.body);
@@ -88,13 +94,8 @@ exports.forgotPasswordController = async (req, res) => {
     }
 
     const resetToken = user.createResetPasswordToken();
-    // console.log(resetToken);
-
+    
     await user.save();
-
-    // const resetUrl = `${req.protocol}://${req.get(
-    //   "host"
-    // )}/api/v1/user/reset-password/${resetToken}`;
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
     const message = `We received a request to reset your password for your account associated with this email address. If you made this request, please click on the link below to reset your password: \n\n ${resetUrl} \n\n If you did not request a password reset, please ignore this email. Your password will remain unchanged.`;
 

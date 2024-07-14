@@ -22,16 +22,34 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
       console.log("Error deleting user");
     }
   }
+  async function handleUpdateRole(id, isAdmin) {
+    // Add code to delete the user
+
+    try {
+      const response = await axios.put(
+        `${backendURL}/api/v1/admin/update-user/${id}`,
+        { isAdmin }
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+      }
+      getUsers();
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <div
       className={`flex flex-col sm:w-64 w-full rounded overflow-hidden shadow-lg p-4 m-4 ${
         actionMode ? "bg-blue-100" : ""
       }`}
     >
-      <div className="px-6 py-4 flex-grow">
-        <div className="font-bold text-xl mb-2">{name}</div>
-        <p className="text-gray-700 text-base">Email: {email}</p>
-        <p className="text-gray-700 text-base">
+      <div className="px-6 py-4 flex-grow overflow-x-auto">
+        <div className="font-bold text-xl mb-2 whitespace-nowrap">{name}</div>
+        <p className="text-gray-700 text-base whitespace-nowrap">
+          Email: <span className="break-all">{email}</span>
+        </p>
+        <p className="text-gray-700 text-base whitespace-nowrap">
           Role: {isAdmin ? "Admin" : "User"}
         </p>
       </div>
@@ -70,7 +88,10 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
             >
               Delete
             </button>
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <button
+              onClick={() => handleUpdateRole(id, !isAdmin)}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
               {isAdmin ? "Demote" : "Set Admin"}
             </button>
           </div>

@@ -5,11 +5,12 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      // required: true,
     },
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -25,6 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["local", "google", 'facebook'],
+      default: "local",
     },
     facebookId: { type: String },
     resetPasswordToken: { type: String },

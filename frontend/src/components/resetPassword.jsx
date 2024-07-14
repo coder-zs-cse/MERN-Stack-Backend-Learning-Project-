@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
+
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 function ResetPassword() {
@@ -13,9 +14,10 @@ function ResetPassword() {
     setEmail(e.target.value);
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData(event.target);
+    const formData = new FormData(e.target);
     const data = { ...Object.fromEntries(formData.entries()) };
     try {
       const response = await axios.patch(
