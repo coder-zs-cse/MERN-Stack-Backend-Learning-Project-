@@ -13,6 +13,9 @@ function Users() {
   const { user } = useSelector((state) => state.user);
   const [usersList, setUsersList] = useState([]);
   const [showNewUserForm, setShowNewUserForm] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState([]); // Users after search and filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [newUserData, setNewUserData] = useState({
     email: "",
     role: "user", // Default role
@@ -35,6 +38,7 @@ function Users() {
         // setIsLoading(false);
         // console.log("mydata: ", data.data);
         setUsersList(data.data);
+        setFilteredUsers(data.data);
         console.log("data: ", data.data);
       } else {
         // setIsLoading(false);
@@ -59,17 +63,13 @@ function Users() {
     e.preventDefault();
     try {
       const isAdmin = newUserData.role === "admin" ? true : false;
-      const response = await axios.put(
-        `${backendURL}/api/v1/admin/new-user/`,
-        {
-          email: newUserData.email,
-          isAdmin
-        }
-      );
+      const response = await axios.put(`${backendURL}/api/v1/admin/new-user/`, {
+        email: newUserData.email,
+        isAdmin,
+      });
       if (response.data.success) {
         toast.success(response.data.message);
-      }
-      else{
+      } else {
         toast.error(response.data.message);
       }
       getUsers();
@@ -80,16 +80,58 @@ function Users() {
     setShowNewUserForm(false); // Close form after submission
     getUsersList();
   };
+  const handleSearch = () => {
+    const lowercasedQuery = searchQuery.toLowerCase().trim();
+    if (!lowercasedQuery) {
+      setFilteredUsers(usersList);
+      return;
+    }
+    console.log(lowercasedQuery);
+    const filtered = usersList.filter((user) => {
+      return (
+        (user.email.toLowerCase().includes(lowercasedQuery) ||
+          user.name.toLowerCase().includes(lowercasedQuery)) &&
+        (user.isAdmin == roleFilter || roleFilter === "all")
+      );
+    });
+    setFilteredUsers(filtered);
+  };
 
   useEffect(() => {
     getUsersList();
   }, []);
   return (
     <div>
+      <div className="py-3 flex items-center space-x-4">
+        <input
+          type="text"
+          placeholder="Search by name or email"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="px-4 py-2 border border-gray-300 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <select
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select Role</option>
+          <option value="all">All</option>
+          <option value="true">Admin</option>
+          <option value="false">User</option>
+          {/* Add more roles as needed */}
+        </select>
+        <button
+          onClick={handleSearch}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Search
+        </button>
+      </div>
       <div>
         <button
           onClick={handleNewUserToggle}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-6 py-3 m-2 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-6 py-3 my-2 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
         >
           <span>New User</span>
           <i className="ri-add-circle-line align-middle"></i>
@@ -102,7 +144,7 @@ function Users() {
             className="bg-white p-5  rounded-lg space-y-5 flex flex-col"
           >
             <div>
-              <h2  className="text-xl font-bold text-center my-2 text-gray-800">
+              <h2 className="text-xl font-bold text-center my-2 text-gray-800">
                 New User
               </h2>
             </div>
@@ -138,8 +180,8 @@ function Users() {
           </form>
         </div>
       )}
-      <div className="flex flex-wrap">
-        {usersList.map((currentUser) => {
+      <div className="flex flex-wrap ">
+        {filteredUsers.map((currentUser) => {
           if (currentUser.id !== user?.id)
             return (
               <UserCard
