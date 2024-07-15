@@ -16,6 +16,7 @@ import Profile from "./pages/profile.jsx";
 import Temp from "./pages/temp.jsx";
 import ResetPassword from "./components/resetPassword.jsx";
 import Users from "./pages/admin/users.jsx";
+import Newsletter from "./pages/admin/newsletter.jsx";
 function App() {
   return (
     <>
@@ -82,11 +83,21 @@ function App() {
             }
           />
           <Route
-            path="/teacher/users"
+            path="/admin/users"
             element={
               <ProtectedRoute>
                 <Layout>
                   <Users />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/newsletter"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Newsletter />
                 </Layout>
               </ProtectedRoute>
             }

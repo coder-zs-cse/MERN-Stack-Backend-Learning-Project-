@@ -31,8 +31,13 @@ const adminMenu = [
     },
     {
         name: 'Users',
-        path: '/teacher/users',
+        path: '/admin/users',
         icon: 'ri-file-list-line mt-auto mb-auto'
+    },
+    {
+        name: 'Newsletter',
+        path: '/admin/newsletter',
+        icon: 'ri-mail-send-line mt-auto mb-auto'
     },
     {
         name: 'Profile',

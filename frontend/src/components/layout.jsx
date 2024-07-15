@@ -86,7 +86,7 @@ function Layout({ children }) {
             className="header bg-white flex justify-center items-center shadow-outline border shadow-md rounded mt-1 p-3"
             style={{ height: "7vh" }}
           >
-            Welcome
+            Intern SE Onboarding Project
           </div>
           <div className="body w-full">{children}</div>
         </div>

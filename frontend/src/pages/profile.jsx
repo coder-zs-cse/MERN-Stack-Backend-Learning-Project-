@@ -5,15 +5,10 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { setUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
+import ProfileCard from "../components/profileCard";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-function ProfileCard({ children }) {
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-6 border mt-5">
-      {children}
-    </div>
-  );
-}
+
 function Profile() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -89,7 +84,7 @@ function Profile() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white   rounded-lg ">
             <button onClick={handleNewUserToggle}>
-                <i className="ri-close-circle-line text-4xl sm:text-5xl md:text-6xl"></i>
+                <i className="ri-close-circle-line text-blue-700 text-4xl sm:text-4xl md:text-4xl"></i>
             </button>
             <form
               onSubmit={handleSubmitNewUser}

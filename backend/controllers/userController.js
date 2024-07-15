@@ -62,7 +62,7 @@ exports.updateUserProfileController = async (req, res) => {
       await user.save();
       return res.status(200).send({
         success: true,
-        message: "User role updated successfully",
+        message: "User profile successfully",
         data: {
           id: user._id,
           name: user.name,

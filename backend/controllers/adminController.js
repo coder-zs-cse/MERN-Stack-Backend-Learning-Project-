@@ -116,3 +116,26 @@ exports.newDefaultUserController = async (req, res) => {
     res.status(500).send({ message: "Server error", success: false });
   }
 };
+
+
+exports.sendNewsletterController = async (req, res) => {
+  try {
+    const { subject, message } = req.body;
+    const Model = User;
+    const users = await Model.find({});
+    users.forEach(async (user) => {
+      await sendEmail({
+        email: user.email,
+        subject,
+        message,
+      });
+    });
+    return res.status(200).send({
+      success: true,
+      message: "Newsletter sent successfully",
+    });
+  }
+  catch(error){
+    res.status(500).send({ message: "Server error", success: false });
+  }
+}
