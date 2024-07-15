@@ -7,7 +7,7 @@ import { setUser } from "../redux/userSlice";
 
 function Layout({ children }) {
   const dispatch = useDispatch()
-
+  
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
   const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
@@ -31,6 +31,7 @@ function Layout({ children }) {
 
   return (
     <div className="main h-screen p-3">
+
       <div className="flex h-full">
         <div
           className={`sidebar bg-blue-500 rounded mr-3 p-3 w-64 overflow-hidden transition duration-200 ease-in-out ${

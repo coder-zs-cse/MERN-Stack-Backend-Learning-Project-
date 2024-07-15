@@ -55,9 +55,7 @@ function App() {
           <Route
             path="/temp"
             element={
-              <PublicRoutes>
                 <Temp />
-              </PublicRoutes>
             }
           />
           <Route
