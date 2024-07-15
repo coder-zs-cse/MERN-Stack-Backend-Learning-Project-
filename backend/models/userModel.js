@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema(
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     passwordChangedAt: { type: Date },
+    newsletterSubscription: {
+      type: Boolean,
+      default: false
+    },
   },
   {
     timestamps: true,

@@ -2,6 +2,10 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
+const {
+  NewsletterModel,
+  CampaignSendModel,
+} = require("../models/newsletterModel");
 
 exports.getListOfUsers = async (req, res) => {
   try {
@@ -117,25 +121,37 @@ exports.newDefaultUserController = async (req, res) => {
   }
 };
 
-
 exports.sendNewsletterController = async (req, res) => {
   try {
     const { subject, message } = req.body;
-    const Model = User;
-    const users = await Model.find({});
-    users.forEach(async (user) => {
+    const Model = User
+    const subscribedUsers = await Model.find({newsletterSubscription: true});
+    const newCampaign = new NewsletterModel({
+      name: "simple",
+      subject,
+      content: message,
+      sentAt: Date.now(),
+    });
+    await newCampaign.save();
+    subscribedUsers.forEach(async (user) => {
       await sendEmail({
         email: user.email,
         subject,
         message,
       });
+      const newCampaignSend = new CampaignSendModel({
+        campaign: newCampaign._id,
+        user: user._id,
+        sentAt: Date.now(),
+      });
+      await newCampaignSend.save();
     });
     return res.status(200).send({
       success: true,
       message: "Newsletter sent successfully",
     });
-  }
-  catch(error){
+  } catch (error) {
+    console.log(error);
     res.status(500).send({ message: "Server error", success: false });
   }
-}
+};

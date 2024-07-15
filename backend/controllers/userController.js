@@ -78,3 +78,38 @@ exports.updateUserProfileController = async (req, res) => {
     });
   }
 };
+
+
+exports.subscribeNewsletterController = async (req, res) => {
+  try {
+    let Model = User;
+    const user = await Model.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(200).send({
+        message: "User not found",
+        success: false,
+      });
+    } else {
+      if(user.newsletterSubscription==true){
+        return res.status(200).send({
+          success: false,
+          message: "Already subscribed to newsletter",
+        });
+      }
+      user.set({
+        newsletterSubscription: true,
+      });
+      await user.save();
+      return res.status(200).send({
+        success: true,
+        message: "Subscribed to newsletter successfully",
+      });
+    }
+  }
+  catch (error) {
+    return res.status(500).send({
+      message: "Error subscribing to newsletter",
+      success: false,
+    });
+  }
+}

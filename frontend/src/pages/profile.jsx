@@ -8,7 +8,6 @@ import { useDispatch } from "react-redux";
 import ProfileCard from "../components/profileCard";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-
 function Profile() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
@@ -56,26 +55,50 @@ function Profile() {
     e.preventDefault();
     try {
       console.log(user?.email);
-        const response = await axios.post(
-          `${backendURL}/api/v1/user/forgot-password`,
-          { email:user?.email }, 
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        if (response.data.success === true) {
-          toast.success("Password reset link sent to your email");
-          // console.log("Password reset link sent");
-        } else {
-          toast.error(response.data.message);
-          // console.log("Error sending password reset link");
+      const response = await axios.post(
+        `${backendURL}/api/v1/user/forgot-password`,
+        { email: user?.email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      } catch (error) {
-        toast.error("Server error");
-        console.log(error);
+      );
+      if (response.data.success === true) {
+        toast.success("Password reset link sent to your email");
+        // console.log("Password reset link sent");
+      } else {
+        toast.error(response.data.message);
+        // console.log("Error sending password reset link");
       }
+    } catch (error) {
+      toast.error("Server error");
+      console.log(error);
+    }
+  };
+
+  const handleSubscribe = async (e) => {
+    try {
+      const response = await axios.post(
+        `${backendURL}/api/v1/user/subscribe-newsletter`,
+        { email: user?.email },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.data.success === true) {
+        toast.success("Newsletter subscribed successfully");
+        // console.log("Password reset link sent");
+      } else {
+        toast.error(response.data.message);
+        // console.log("Error sending password reset link");
+      }
+    } catch (error) {
+      toast.error("Server error");
+      console.log(error);
+    }
   };
 
   return (
@@ -84,7 +107,7 @@ function Profile() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white   rounded-lg ">
             <button onClick={handleNewUserToggle}>
-                <i className="ri-close-circle-line text-blue-700 text-4xl sm:text-4xl md:text-4xl"></i>
+              <i className="ri-close-circle-line text-blue-700 text-4xl sm:text-4xl md:text-4xl"></i>
             </button>
             <form
               onSubmit={handleSubmitNewUser}
@@ -167,6 +190,12 @@ function Profile() {
           <span>Change Password</span>
         </button>
 
+        <button
+          onClick={handleSubscribe}
+          className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-2 py-2 mt-5 rounded-md transition duration-150 ease-in-out flex items-center justify-center space-x-2"
+        >
+          <span>Subscribe to Newsletter</span>
+        </button>
       </ProfileCard>
     </div>
   );
