@@ -13,7 +13,8 @@ import ForgotPassword from "./components/forgotPassword.jsx";
 import { Toaster } from "react-hot-toast";
 import Landing from "./pages/landing.jsx";
 import Profile from "./pages/profile.jsx";
-import Temp from "./pages/temp.jsx";
+// import Temp from "./pages/temp.jsx";
+import ChatApp from './temp.jsx'
 import ResetPassword from "./components/resetPassword.jsx";
 import Users from "./pages/admin/users.jsx";
 import Newsletter from "./pages/admin/newsletter.jsx";
@@ -55,7 +56,7 @@ function App() {
           <Route
             path="/temp"
             element={
-                <Temp />
+                <ChatApp />
             }
           />
           <Route

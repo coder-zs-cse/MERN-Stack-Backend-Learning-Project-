@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "../firebase";
+import { db, auth } from "../firebase-config";
 import {
   collection,
   addDoc,
@@ -10,7 +10,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-import "../style/Chat.css";
+import "../styles/Chat.css";
 
 const Chat = ({ room }) => {
   const [messages, setMessages] = useState([]);
@@ -42,7 +42,7 @@ const Chat = ({ room }) => {
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
-      user: auth.currentUser.displayName,
+      // user: auth.currentUser.displayName,
       room,
     });
 
@@ -77,4 +77,5 @@ const Chat = ({ room }) => {
   );
 };
 
-export default Chat;
+
+export {Chat}

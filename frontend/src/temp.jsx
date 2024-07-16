@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Chat } from "./components/Chat";
-import { Auth } from "./components/Auth.js";
-import { AppWrapper } from "./components/AppWrapper";
+import { Chat } from "./components/Chat.jsx";
+import { Auth } from "./components/Auth.jsx";
+import { AppWrapper } from "./components/AppWrapper.jsx";
 import Cookies from "universal-cookie";
 import "./App.css";
 

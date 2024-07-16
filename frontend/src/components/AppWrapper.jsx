@@ -1,11 +1,11 @@
-import { auth } from "../firebase.js";
+import { auth } from "../firebase-config.js";
 import { signOut } from "firebase/auth";
 
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
+ const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
   const signUserOut = async () => {
     await signOut(auth);
     cookies.remove("auth-token");
@@ -19,9 +19,9 @@ const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
         <h1> Chat App </h1>
       </div>
 
-      <div className="app-container flex justify-center h-screen items-center">{children}</div>
+      <div className="app-container">{children}</div>
       {isAuth && (
-        <div className="sign-out">
+        <div className="sign-out auth">
           <button onClick={signUserOut}> Sign Out</button>
         </div>
       )}
@@ -29,4 +29,4 @@ const AppWrapper = ({ children, isAuth, setIsAuth, setIsInChat }) => {
   );
 };
 
-export default AppWrapper
+export {AppWrapper}

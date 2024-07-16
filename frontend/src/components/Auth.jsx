@@ -1,15 +1,30 @@
-import { auth, provider } from "../firebase.js";
+import { auth } from "../firebase-config.js";
 import { signInWithPopup } from "firebase/auth";
-import "../style/Auth.css";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
+import "../styles/Auth.css";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
 
-const Auth = ({ setIsAuth }) => {
+export const Auth = ({ setIsAuth }) => {
   const signInWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      cookies.set("auth-token", result.user.refreshToken);
+      await signInAnonymously(auth);
+      // const result = await signInWithPopup(auth, provider);
+      // cookies.set("auth-token", result.user.refreshToken);
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          // User is signed in, see docs for a list of available properties
+          // https://firebase.google.com/docs/reference/js/auth.user
+          const uid = user.uid;
+          console.log(uid);
+          // ...
+        } else {
+          // User is signed out
+          // ...
+          console.log("no user");
+        }
+      });
       setIsAuth(true);
     } catch (err) {
       console.error(err);
@@ -22,5 +37,3 @@ const Auth = ({ setIsAuth }) => {
     </div>
   );
 };
-
-export default Auth
