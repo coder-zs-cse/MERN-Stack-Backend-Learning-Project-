@@ -2,10 +2,11 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/userSlice";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
+import Loading from "./loading.jsx";
 
 function ProtectedRoute(props) {
-    
+  const [loading, setLoading] = useState(true);
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ function ProtectedRoute(props) {
       localStorage.removeItem("token");
       navigate("/login");
     }
+    setLoading(false)
   }
   useEffect(() => {
     // if(!localStorage.getItem("token") && user){
@@ -43,7 +45,7 @@ function ProtectedRoute(props) {
   }, [user]);
 
   if (localStorage.getItem("token")) {
-    return props.children;
+    return <>{loading ? <Loading /> : props.children }</>;
   } else {
     return <Navigate to="/login" />;
   }
