@@ -4,7 +4,8 @@ import { userSlice } from "./userSlice"
 
 
 const rootReducer = combineReducers({
-    user: userSlice.reducer
+    user: userSlice.reducer,
+    userId: userIdSlice.reducer
 })
 
 const store = configureStore({

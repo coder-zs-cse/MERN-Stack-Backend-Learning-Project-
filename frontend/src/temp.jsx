@@ -45,4 +45,4 @@ function ChatApp() {
   );
 }
 
-export default ChatApp;
+export {ChatApp};

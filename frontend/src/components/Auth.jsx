@@ -1,39 +1,68 @@
-import { auth } from "../firebase-config.js";
-import { signInWithPopup } from "firebase/auth";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import "../styles/Auth.css";
-import Cookies from "universal-cookie";
+import React, { useContext } from "react";
+import Loading from "./loading";
+import { useState, useEffect } from "react";
+import Assistant from "../pages/Assistant";
+import { auth } from "../firebase-config";
+import { useSelector, useDispatch } from "react-redux";
 
-const cookies = new Cookies();
+import { setUser } from "../redux/userSlice";
+import { onAuthStateChanged, signInAnonymously, signOut } from "firebase/auth";
 
-export const Auth = ({ setIsAuth }) => {
-  const signInWithGoogle = async () => {
+function Auth(props) {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
+  const { userId } = useSelector((state) => state.userId);
+  async function anonymousSignIn(forceNew = false) {
+    setLoading(true);
     try {
+      if (forceNew) {
+        await signOut(auth);
+      }
       await signInAnonymously(auth);
-      // const result = await signInWithPopup(auth, provider);
-      // cookies.set("auth-token", result.user.refreshToken);
-      onAuthStateChanged(auth, (user) => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          // User is signed in, see docs for a list of available properties
-          // https://firebase.google.com/docs/reference/js/auth.user
           const uid = user.uid;
-          console.log(uid);
-          // ...
+          // setUser(uid);
+          dispatch(setUser(uid));
         } else {
-          // User is signed out
-          // ...
           console.log("no user");
         }
+        setLoading(false);
+        // unsubscribe(); // Unsubscribe after first call
       });
-      setIsAuth(true);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error signing in anonymously:", error);
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
+    anonymousSignIn();
+  }, []);
+
+  const handleNewUserId = () => {
+    anonymousSignIn(true);
   };
+
   return (
-    <div className="auth">
-      <p> Sign In With Google To Continue </p>
-      <button onClick={signInWithGoogle}> Sign In With Google </button>
+    <div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <>
+          {props.children}
+
+          <button
+            onClick={handleNewUserId}
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Get New User ID
+          </button>
+          <p>Current User ID: {userId}</p>
+        </>
+      )}
     </div>
   );
-};
+}
+
+export default Auth;
