@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loading from "../components/loading";
+import FirebaseAuth from "../components/FirebaseAuth";
 // import {ChatApp} from '../temp'
-// import Assistant from "../components/Assistant";
- 
+import Assistant from "../components/Assistant";
+
 function Landing() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -16,7 +17,7 @@ function Landing() {
     navigate("/login");
   };
   useEffect(() => {
-    setLoading(false)
+    setLoading(false);
   }, []);
   return (
     <div className="flex flex-col min-h-screen">
@@ -94,7 +95,9 @@ function Landing() {
               </div>
             </div>
             <div className="absolute bottom-0 right-0 mb-4 mr-4 md:w-1/3 lg:w-1/4">
-              {/* <Assistant /> */}
+              <FirebaseAuth>
+                <Assistant role="client" />
+              </FirebaseAuth>
               koo
             </div>
           </main>

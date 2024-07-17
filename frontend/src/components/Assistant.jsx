@@ -18,9 +18,9 @@ function Assistant(prop) {
   const messagesRef = collection(db, "messages");
   const [chatUid, setChatUid]= useState("");
   const { anonymousUserId } = useSelector((state) => state.anonymousUserId);
-  console.log("queryidassi",prop.queryUid);
-
+  
   async function sendMessage(message) {
+    console.log("queryidassi",anonymousUserId);
     const uidChat = prop.role === 'admin' ? prop.queryUid : anonymousUserId; 
     await addDoc(messagesRef, {
       message,
@@ -52,13 +52,12 @@ function Assistant(prop) {
   }, [prop.queryUid]);
   return (
     <div>
-      Assistant this is assistant
       <Chat
         title={prop.title}
         sendMessage={sendMessage}
         receiveMessages={receiveMessages}
         anonymousUserId={chatUid} 
-        senderType= {prop.role}
+        role= {prop.role}
       />
     </div>
   );
