@@ -40,6 +40,11 @@ const adminMenu = [
         icon: 'ri-mail-send-line mt-auto mb-auto'
     },
     {
+        name: 'Assistant',
+        path: '/admin/assistant',
+        icon: 'ri-message-2-line mt-auto mb-auto'
+    },
+    {
         name: 'Profile',
         path: '/profile',
         icon: "ri-user-line mt-auto mb-auto"

@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loading from "../components/loading";
-import {ChatApp} from '../temp'
-import Assistant from "../components/Assistant";
-
+// import {ChatApp} from '../temp'
+// import Assistant from "../components/Assistant";
+ 
 function Landing() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -94,7 +94,8 @@ function Landing() {
               </div>
             </div>
             <div className="absolute bottom-0 right-0 mb-4 mr-4 md:w-1/3 lg:w-1/4">
-              <Assistant />
+              {/* <Assistant /> */}
+              koo
             </div>
           </main>
 

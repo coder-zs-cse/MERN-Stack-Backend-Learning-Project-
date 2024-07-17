@@ -13,11 +13,14 @@ import ForgotPassword from "./components/forgotPassword.jsx";
 import { Toaster } from "react-hot-toast";
 import Landing from "./pages/landing.jsx";
 import Profile from "./pages/profile.jsx";
-import Temp from "./pages/temp.jsx";
-import {ChatApp} from './temp.jsx'
+// import Temp from "./pages/temp.jsx";
+import FirebaseAuth from "./components/FirebaseAuth.jsx";
+
 import ResetPassword from "./components/resetPassword.jsx";
 import Users from "./pages/admin/users.jsx";
 import Newsletter from "./pages/admin/newsletter.jsx";
+import Assistant from "./components/Assistant.jsx";
+import AdminAssistantPage from "./pages/admin/adminAssistant.jsx";
 function App() {
   return (
     <>
@@ -56,10 +59,12 @@ function App() {
           <Route
             path="/temp"
             element={
-                <ChatApp />
+              <FirebaseAuth>
+                <Assistant role='client'/>
+              </FirebaseAuth>
             }
           />
-          
+
           <Route
             path="/forgot-password"
             element={
@@ -68,12 +73,7 @@ function App() {
               </PublicRoutes>
             }
           />
-          <Route
-            path="/reset-password/:token"
-            element={
-                <ResetPassword />
-            }
-          />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route
             path="/register"
             element={
@@ -98,6 +98,18 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Newsletter />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/assistant"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <FirebaseAuth>
+                    <AdminAssistantPage />
+                  </FirebaseAuth>
                 </Layout>
               </ProtectedRoute>
             }

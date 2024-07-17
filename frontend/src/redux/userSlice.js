@@ -13,4 +13,18 @@ export const userSlice = createSlice({
     }
 })
 
+export const anonymousUserIdSlice = createSlice({
+    name: "anonymousUserId",
+    initialState: {
+        anonymousUserId: null
+    },
+    reducers: {
+        setanonymousUserId : (state,action)=>{
+            state.anonymousUserId = action.payload
+        }
+    }
+
+})
+
 export const {setUser} = userSlice.actions 
+export const {setanonymousUserId} = anonymousUserIdSlice.actions

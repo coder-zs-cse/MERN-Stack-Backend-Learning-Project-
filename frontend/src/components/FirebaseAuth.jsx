@@ -1,17 +1,15 @@
 import React, { useContext } from "react";
 import Loading from "./loading";
 import { useState, useEffect } from "react";
-import Assistant from "../pages/Assistant";
 import { auth } from "../firebase-config";
 import { useSelector, useDispatch } from "react-redux";
-
-import { setUser } from "../redux/userSlice";
+import { setanonymousUserId } from "../redux/userSlice";
 import { onAuthStateChanged, signInAnonymously, signOut } from "firebase/auth";
 
 function Auth(props) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const { userId } = useSelector((state) => state.userId);
+  const { anonymousUserId } = useSelector((state) => state.anonymousUserId);
   async function anonymousSignIn(forceNew = false) {
     setLoading(true);
     try {
@@ -22,8 +20,9 @@ function Auth(props) {
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
           const uid = user.uid;
+          console.log("this is it",uid);
           // setUser(uid);
-          dispatch(setUser(uid));
+          dispatch(setanonymousUserId(uid));
         } else {
           console.log("no user");
         }
@@ -58,11 +57,11 @@ function Auth(props) {
           >
             Get New User ID
           </button>
-          <p>Current User ID: {userId}</p>
+          <p>Current User ID: {anonymousUserId}</p>
         </>
       )}
     </div>
   );
 }
-
+ 
 export default Auth;

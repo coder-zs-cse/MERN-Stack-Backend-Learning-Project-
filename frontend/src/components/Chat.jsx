@@ -3,7 +3,7 @@ import { useState, useEffect, useRef} from "react";
 import { useSelector } from "react-redux";
 
 
-function SearchBar({  addMessage, sendMessage, userId }) {
+function SearchBar({ sendMessage }) {
   const inputRef = useRef(null); 
   function handleSubmit(event) {
     console.log("yes i ma there");
@@ -13,7 +13,7 @@ function SearchBar({  addMessage, sendMessage, userId }) {
     if (message === "") return;
     
     // addMessage(message);
-    if (sendMessage) sendMessage(message, userId);
+    if (sendMessage) sendMessage(message);
     // setNewMessage("");
     inputRef.current.value = "";
   }
@@ -55,7 +55,8 @@ function SearchBar({  addMessage, sendMessage, userId }) {
 }
 
 function ChatWidget(props) {
-  const { userId} = useSelector((state) => state.userId);
+  const [ chatUid, setChatUid] = useState("")
+  console.log("Anonymous user id inside chatwidget",props.anonymousUserId);
   console.log("props",props.senderType);
 
   const [messages, setMessages] = useState([]);
@@ -68,30 +69,25 @@ function ChatWidget(props) {
   // };
  
  
-  function AddBubble(props) {
-    console.log("yes",props.senderType);
-    if (props.senderType === "client") {
-      return <SentBubble message={props.message} />;
+  function AddBubble({senderType, message}) {
+    // console.log("yes",props.senderType);
+    if (senderType === "client" || props.role === "client") {
+      return <SentBubble message={message} />;
     } else {
-      return <ReceivedBubble message={props.message} />;
+      return <ReceivedBubble message={message} />;
     }
   }
 
   useEffect(() => {
-    console.log("ammiii");
-    // const {allMessages, unsuscribe} = props.receiveMessages()
+    setChatUid(props.anonymousUserId)
     props.receiveMessages(setMessages);
-    // console.log("logit",allMessages);
-    // setMessages(allMessages)
-    
-    // setMessages(props.receiveMessages())
-  },[])
+  },[props.anonymousUserId])
 
 
   return (
     <div className="flex flex-col  w-72 fixed right-2 bottom-4 border p-2 rounded-md">
       <div className="bg-blue-500 text-white text-lg flex justify-center font-semibold p-2 rounded-t-md">
-        {props.title}
+        Customer Care
       </div>
       <MessagesFrame>
       <AddBubble key="0" message="Hello, how can I help you?" senderType="admin" />
@@ -104,9 +100,7 @@ function ChatWidget(props) {
         ))}
       </MessagesFrame>
       <SearchBar 
-        
         sendMessage={props.sendMessage}
-        userId={userId}
       />
     </div>
   );

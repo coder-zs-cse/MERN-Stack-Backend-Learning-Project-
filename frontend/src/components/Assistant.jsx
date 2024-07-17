@@ -16,20 +16,25 @@ import {
 
 function Assistant(prop) {
   const messagesRef = collection(db, "messages");
-  const { userId } = useSelector((state) => state.userId);
+  const [chatUid, setChatUid]= useState("");
+  const { anonymousUserId } = useSelector((state) => state.anonymousUserId);
+  console.log("queryidassi",prop.queryUid);
 
-  async function sendMessage(message, Id) {
+  async function sendMessage(message) {
+    const uidChat = prop.role === 'admin' ? prop.queryUid : anonymousUserId; 
     await addDoc(messagesRef, {
       message,
       createdAt: serverTimestamp(),
-      uid: userId,
-      senderType: "client",
+      uid: uidChat,
+      senderType: prop.role,
     });
   }
   function receiveMessages(setMessagesCallback) {
+    const uidForQuery = prop.role === 'admin' ? prop.queryUid : anonymousUserId; 
+    console.log("uidForQuery",uidForQuery);
     const queryMessages = query(
       messagesRef,
-      where("uid", "==", userId),
+      where("uid", "==", uidForQuery),
       orderBy("createdAt")
     );
     const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
@@ -42,15 +47,18 @@ function Assistant(prop) {
     });
     return ()=>unsuscribe();
   }
+  useEffect(() => {
+    setChatUid(prop.queryUid);
+  }, [prop.queryUid]);
   return (
     <div>
       Assistant this is assistant
       <Chat
-        title="Customer Care"
+        title={prop.title}
         sendMessage={sendMessage}
         receiveMessages={receiveMessages}
-        userId={userId}
-        senderType="client"
+        anonymousUserId={chatUid} 
+        senderType= {prop.role}
       />
     </div>
   );
