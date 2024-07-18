@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userMenu, adminMenu } from "../data/menu";
+import { userMenu, adminMenu, doctorMenu, getMenuForRole } from "../data/menu";
 import { RiMenuLine, RiCloseLine } from "react-icons/ri";
 import { setUser } from "../redux/userSlice";
+
 
 function Layout({ children }) {
   const dispatch = useDispatch()
   
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
-  const menuToBeRendered = user?.isAdmin ? adminMenu : userMenu;
+
+  
+
+  const menuToBeRendered = getMenuForRole(user?.role);
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);

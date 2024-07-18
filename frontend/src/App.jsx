@@ -21,6 +21,8 @@ import Users from "./pages/admin/users.jsx";
 import Newsletter from "./pages/admin/newsletter.jsx";
 import Assistant from "./components/Assistant.jsx";
 import AdminAssistantPage from "./pages/admin/adminAssistant.jsx";
+import DoctorProfile from "./pages/doctor/profile/DoctorProfile.jsx";
+import DoctorList from "./pages/user/doctorList.jsx";
 function App() {
   return (
     <>
@@ -49,6 +51,16 @@ function App() {
             }
           />
           <Route
+            path="/doctors"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <DoctorList />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/login"
             element={
               <PublicRoutes>
@@ -60,8 +72,18 @@ function App() {
             path="/temp"
             element={
               <FirebaseAuth>
-                <Assistant role='client'/>
+                <Assistant role="client" />
               </FirebaseAuth>
+            }
+          />
+          <Route
+            path="/doctor/profile"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <DoctorProfile />
+                </Layout>
+              </ProtectedRoute>
             }
           />
 

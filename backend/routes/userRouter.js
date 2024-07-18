@@ -1,8 +1,8 @@
 const express = require("express");
 const { registerController, loginController,forgotPasswordController, resetPasswordController, googleLoginController, facebookLoginController } = require("../controllers/authController");
-const { userInfoController,updateUserProfileController, subscribeNewsletterController } = require("../controllers/userController");
+const { userInfoController,updateUserProfileController, subscribeNewsletterController, getListOfDoctorsController } = require("../controllers/userController");
 const router = express.Router();
-const authMiddleware = require('../middleware/authMiddleware');
+const {authMiddleware,userAuth} = require('../middleware/authMiddleware');
 
 router.post('/register',registerController)
 
@@ -18,8 +18,11 @@ router.post('/forgot-password',forgotPasswordController)
 
 router.patch('/reset-password/',resetPasswordController)
 
-router.put('/update-user-profile/',updateUserProfileController)
+router.put('/update-user-profile/',userAuth, updateUserProfileController)
 
 router.post('/subscribe-newsletter',subscribeNewsletterController)
+
+router.get('/list-of-doctors',authMiddleware,userAuth,getListOfDoctorsController)
+
 
 module.exports = router

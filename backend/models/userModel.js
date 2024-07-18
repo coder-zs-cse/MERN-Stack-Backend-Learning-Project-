@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 
+const doctorDetailsSchema = new mongoose.Schema({
+  designation: String,
+  experience: Number,
+  clinicName: String,
+  costOfCharge: Number,
+  timings: String,
+});
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -18,14 +25,15 @@ const userSchema = new mongoose.Schema(
         return this.authProvider === "local";
       },
     },
-    isAdmin: {
-      type: Boolean,
-      default: false, // New users are not admins by default
+    role: {
+      type: String,
+      enum: ["user", "admin", "doctor"],
+      default: "user",
     },
     authProvider: {
       type: String,
       required: true,
-      enum: ["local", "google", 'facebook'],
+      enum: ["local", "google", "facebook"],
       default: "local",
     },
     facebookId: { type: String },
@@ -34,8 +42,9 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: { type: Date },
     newsletterSubscription: {
       type: Boolean,
-      default: false
+      default: false,
     },
+    doctorDetails: doctorDetailsSchema,
   },
   {
     timestamps: true,

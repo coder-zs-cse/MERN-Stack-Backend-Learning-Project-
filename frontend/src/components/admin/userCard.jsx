@@ -3,7 +3,7 @@ import axios from "axios";
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 import toast from "react-hot-toast";
 
-function UserCard({ id, name, email, isAdmin, getUsers }) {
+function UserCard({ id, name, email, role, getUsers }) {
   const [showActions, setShowActions] = useState(false);
   const [actionMode, setActionMode] = useState(false);
 
@@ -12,7 +12,13 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
 
     try {
       const response = await axios.delete(
-        `${backendURL}/api/v1/admin/delete-user/${id}`
+        `${backendURL}/api/v1/admin/delete-user/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
       if (response.data.success) {
         toast.success(response.data.message);
@@ -22,13 +28,13 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
       console.log("Error deleting user");
     }
   }
-  async function handleUpdateRole(id, isAdmin) {
+  async function handleUpdateRole(id, role) {
     // Add code to delete the user
 
     try {
       const response = await axios.put(
         `${backendURL}/api/v1/admin/update-user/${id}`,
-        { isAdmin }
+        { role }
       );
       if (response.data.success) {
         toast.success(response.data.message);
@@ -50,7 +56,7 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
           Email: <span className="break-all">{email}</span>
         </p>
         <p className="text-gray-700 text-base whitespace-nowrap">
-          Role: {isAdmin ? "Admin" : "User"}
+          Role: {role === "admin" ? "Admin" : "User"}
         </p>
       </div>
       <div>
@@ -89,10 +95,12 @@ function UserCard({ id, name, email, isAdmin, getUsers }) {
               Delete
             </button>
             <button
-              onClick={() => handleUpdateRole(id, !isAdmin)}
+              onClick={() =>
+                handleUpdateRole(id, role === "admin" ? "user" : "admin")
+              }
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              {isAdmin ? "Demote" : "Set Admin"}
+              {role === "admin" ? "Demote" : "Set Admin"}
             </button>
           </div>
         )}

@@ -39,6 +39,11 @@ function Profile() {
           ...newUserData,
           // previousEmail: user.email,
           id: user.id,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
         }
       );
       if (response.data.success) {

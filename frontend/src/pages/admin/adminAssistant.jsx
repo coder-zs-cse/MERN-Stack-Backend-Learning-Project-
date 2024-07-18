@@ -25,7 +25,6 @@ const AdminAssistantPage = () => {
 
   const handleUserClick = (user) => {
     setSelectedUser(user);
-    console.log("current user", user);
   };
 
   return (

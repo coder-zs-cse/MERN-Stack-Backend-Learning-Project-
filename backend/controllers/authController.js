@@ -8,8 +8,8 @@ const { OAuth2Client } = require("google-auth-library");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-const signToken = async (id) => {
-  const token = await jwt.sign({ id }, process.env.JWT_SECRET, {
+const signToken = async (id, myRole) => {
+  const token = await jwt.sign({ id, myRole }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   return token;
@@ -42,7 +42,7 @@ exports.registerController = async (req, res) => {
       .status(200)
       .send({ message: "User created successfully", success: true });
   } catch (error) {
-    res.status(500).send({ message: "Server error", success: false });
+    return res.status(500).send({ message: "Server error", success: false });
   }
 };
 
@@ -72,12 +72,12 @@ exports.loginController = async (req, res) => {
         success: false,
       });
     }
-    const token = await signToken(user._id);
+    const token = await signToken(user._id, user.role);
     res
       .status(200)
       .send({ message: "Login Successfull", success: true, data: { token } });
   } catch (error) {
-    res.status(500).send({ message: "Server error", success: false, error });
+    return res.status(500).send({ message: "Server error", success: false, error });
   }
 };
 
@@ -148,7 +148,7 @@ exports.resetPasswordController = async (req, res) => {
     await user.save();
 
     const jwtToken = await signToken(user._id);
-    res.status(200).send({
+    return res.status(200).send({
       message: "Password Reset Successfully",
       success: true,
       data: { token: jwtToken },
@@ -158,7 +158,8 @@ exports.resetPasswordController = async (req, res) => {
 };
 
 exports.googleLoginController = async (req, res) => {
-  const { token } = req.body;
+
+  const { token, role } = req.body;
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -174,20 +175,21 @@ exports.googleLoginController = async (req, res) => {
         email,
         name,
         authProvider: "google",
+        role
       });
       await user.save();
     }
     // console.log("user",user);
     // Generate JWT or session for the user
-    const jwtToken = await signToken(user._id);
-    res.status(200).send({
+    const jwtToken = await signToken(user._id, user.role);
+    return res.status(200).send({
       message: "Google Signin successfull",
       success: true,
       data: { token: jwtToken },
     });
   } catch (error) {
     console.error("Error verifying Google token:", error);
-    res.status(401).json({ error: "Authentication failed" });
+    return res.status(401).json({ error: "Authentication failed" });
   }
 };
 
@@ -214,15 +216,15 @@ exports.facebookLoginController = async (req, res) => {
     }
     
     // Generate JWT or session for the user
-    const jwtToken = await signToken(user._id);
-    res.status(200).send({
+    const jwtToken = await signToken(user._id, user.role);
+    return res.status(200).send({
       message: "Facebook Signin successfull",
       success: true,
       data: { token: jwtToken },
     });
   } catch (error) {
     console.error('Error verifying Facebook token:', error);
-    res.status(401).json({ error: 'Authentication failed' });
+    return res.status(401).json({ error: 'Authentication failed' });
   }
 
     // Generate JWT or session for the user

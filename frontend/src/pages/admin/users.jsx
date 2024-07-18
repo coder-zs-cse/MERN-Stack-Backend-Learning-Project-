@@ -66,10 +66,10 @@ function Users() {
     e.preventDefault();
     setLoading(true);
     try {
-      const isAdmin = newUserData.role === "admin" ? true : false;
+      const role = newUserData.role 
       const response = await axios.put(`${backendURL}/api/v1/admin/new-user/`, {
         email: newUserData.email,
-        isAdmin,
+        role,
       });
       if (response.data.success) {
         toast.success(response.data.message);
@@ -96,7 +96,7 @@ function Users() {
       return (
         (user.email.toLowerCase().includes(lowercasedQuery) ||
           user.name?.toLowerCase().includes(lowercasedQuery)) &&
-        (user.isAdmin == roleFilter || roleFilter === "all")
+        (user.role == roleFilter || roleFilter === "all")
       );
     });
     setFilteredUsers(filtered);
@@ -126,8 +126,8 @@ function Users() {
             >
               <option value="">Select Role</option>
               <option value="all">All</option>
-              <option value="true">Admin</option>
-              <option value="false">User</option>
+              <option value="admin">Admin</option>
+              <option value="user">User</option>
               {/* Add more roles as needed */}
             </select>
             <button
@@ -200,7 +200,7 @@ function Users() {
                     id={currentUser.id}
                     name={currentUser.name}
                     email={currentUser.email}
-                    isAdmin={currentUser.isAdmin}
+                    role={currentUser.role}
                     getUsers={getUsersList}
                   />
                 );

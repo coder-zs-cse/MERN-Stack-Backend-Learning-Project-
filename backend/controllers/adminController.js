@@ -23,7 +23,7 @@ exports.getListOfUsers = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
-          isAdmin: user.isAdmin,
+          role: user.role,
         };
         output.push(userOutput);
       });
@@ -74,7 +74,7 @@ exports.updateUserController = async (req, res) => {
         success: false,
       });
     } else {
-      user.isAdmin = req.body.isAdmin;
+      user.role = req.body.role;
       await user.save();
       return res.status(200).send({
         success: true,
@@ -91,7 +91,7 @@ exports.updateUserController = async (req, res) => {
 
 exports.newDefaultUserController = async (req, res) => {
   try {
-    const { email, isAdmin } = req.body;
+    const { email, role } = req.body;
     const Model = User;
     const userExist = await Model.findOne({ email });
     if (userExist) {
@@ -108,7 +108,7 @@ exports.newDefaultUserController = async (req, res) => {
     const newUser = new Model({
       email,
       password: hashedPassword,
-      isAdmin,
+      role,
       authProvider: "local",
     });
     await newUser.save();
@@ -117,7 +117,7 @@ exports.newDefaultUserController = async (req, res) => {
       .status(200)
       .send({ message: "User created successfully", success: true });
   } catch (error) {
-    res.status(500).send({ message: "Server error", success: false });
+    return res.status(500).send({ message: "Server error", success: false });
   }
 };
 
@@ -152,6 +152,6 @@ exports.sendNewsletterController = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send({ message: "Server error", success: false });
+    return res.status(500).send({ message: "Server error", success: false });
   }
 };

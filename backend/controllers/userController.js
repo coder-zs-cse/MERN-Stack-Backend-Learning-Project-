@@ -17,12 +17,13 @@ exports.userInfoController = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        isAdmin: user.isAdmin,
+        role: user.role,
         // role: req.body.role,
       };
-      // if (output.role === "teacher") {
-      //   output["speciality"] = user.speciality;
-      // }
+      if(output.role === "doctor"){
+        output["doctorDetails"] = user.doctorDetails;
+      }
+
       return res.status(200).send({
         success: true,
         data: output,
@@ -67,7 +68,7 @@ exports.updateUserProfileController = async (req, res) => {
           id: user._id,
           name: user.name,
           email: user.email,
-          isAdmin: user.isAdmin,
+          role: user.role,
         },
       });
     }
@@ -109,6 +110,24 @@ exports.subscribeNewsletterController = async (req, res) => {
   catch (error) {
     return res.status(500).send({
       message: "Error subscribing to newsletter",
+      success: false,
+    });
+  }
+}
+
+
+
+exports.getListOfDoctorsController = async (req, res) => {
+  try {
+    const doctors = await User.find({ role: "doctor" });
+    return res.status(200).send({
+      message: "List of doctors",
+      success: true,
+      data: doctors,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      message: "Error fetching list of doctors",
       success: false,
     });
   }

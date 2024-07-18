@@ -1,9 +1,7 @@
-import React from "react";
-import { db, auth } from "../firebase-config";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { db } from "../firebase-config";
 import Chat from "./Chat";
 import { useSelector } from "react-redux";
-import { getAuth, signInAnonymously } from "firebase/auth";
 import {
   collection,
   addDoc,
@@ -14,50 +12,52 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-function Assistant(prop) {
+function Assistant({ role, queryUid, title }) {
   const messagesRef = collection(db, "messages");
-  const [chatUid, setChatUid]= useState("");
+  const [chatUid, setChatUid] = useState("");
   const { anonymousUserId } = useSelector((state) => state.anonymousUserId);
   
   async function sendMessage(message) {
-    console.log("queryidassi",anonymousUserId);
-    const uidChat = prop.role === 'admin' ? prop.queryUid : anonymousUserId; 
+    console.log("queryidassi", anonymousUserId);
+    const uidChat = role === 'admin' ? queryUid : anonymousUserId; 
     await addDoc(messagesRef, {
       message,
       createdAt: serverTimestamp(),
       uid: uidChat,
-      senderType: prop.role,
+      senderType: role,
     });
   }
+
   function receiveMessages(setMessagesCallback) {
-    const uidForQuery = prop.role === 'admin' ? prop.queryUid : anonymousUserId; 
-    console.log("uidForQuery",uidForQuery);
+    const uidForQuery = role === 'admin' ? queryUid : anonymousUserId; 
+    console.log("uidForQuery", uidForQuery);
     const queryMessages = query(
       messagesRef,
       where("uid", "==", uidForQuery),
       orderBy("createdAt")
     );
-    const unsuscribe = onSnapshot(queryMessages, (snapshot) => {
+    const unsubscribe = onSnapshot(queryMessages, (snapshot) => {
       let allMessages = [];
       snapshot.forEach((doc) => {
         allMessages.push({ ...doc.data(), id: doc.id });
       });
       setMessagesCallback(allMessages);
-      console.log("beofr",allMessages);
     });
-    return ()=>unsuscribe();
+    return () => unsubscribe();
   }
+
   useEffect(() => {
-    setChatUid(prop.queryUid);
-  }, [prop.queryUid]);
+    setChatUid(queryUid);
+  }, [queryUid]);
+
   return (
     <div>
       <Chat
-        title={prop.title}
+        title={title}
         sendMessage={sendMessage}
         receiveMessages={receiveMessages}
         anonymousUserId={chatUid} 
-        role= {prop.role}
+        role={role}
       />
     </div>
   );

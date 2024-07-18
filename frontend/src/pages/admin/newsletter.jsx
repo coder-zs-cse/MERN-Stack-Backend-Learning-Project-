@@ -16,7 +16,12 @@ function Newsletter() {
     try {
       const response = await axios.post(
         `${backendURL}/api/v1/admin/send-newsletter`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
       );
       console.log(response.data);
       if (response.data.success == true) {

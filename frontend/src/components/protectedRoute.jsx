@@ -23,7 +23,7 @@ function ProtectedRoute(props) {
       );
       const data = await responseData.json();
       if (data.success) {
-        // console.log(data.data);
+        console.log("user data inside protected route",data.data);
         await dispatch(setUser(data.data));
       } else {
         localStorage.removeItem("token");
@@ -36,9 +36,7 @@ function ProtectedRoute(props) {
     setLoading(false)
   }
   useEffect(() => {
-    // if(!localStorage.getItem("token") && user){
-    //     dispatch(setUser(null));
-    // }
+
     if (!user) {
       getUser();
     }

@@ -4,7 +4,7 @@ const jwt  = require("jsonwebtoken")
 
 
 function authMiddleware(req,res,next){
-    try{
+    try{ 
         const token = req.headers["authorization"].split(" ")[1]
         jwt.verify(token,process.env.JWT_SECRET,async (err,decoded)=>{
             if(err){
@@ -14,18 +14,76 @@ function authMiddleware(req,res,next){
                 })
             }
             else{
-                req.body.role = decoded.myRole
+                req.body.myRole = decoded.myRole
                 req.body.userId = decoded.id
-                next()
             }
+            next()
         })
     }
     catch(error){
         return res.status(401).send({
-            message: "Auth failed",
+
+            message: "Server error in auth middleware",
             success: false
         })
     }
 }
 
-module.exports = authMiddleware
+function doctorAuth(req,res, next){
+    try {
+        if(req.body.myRole!=='doctor'){
+            return res.status(200).send({
+                message: "You are not authorized to access this route",
+                success: false
+            })
+        }
+        next()
+    } catch (error) {
+        return res.status(500).send({
+            message: "Server error in doctorauth",
+            success: false
+        })
+    } 
+}
+
+function userAuth(req,res, next){
+    try {
+        if(req.body.myRole!=='user'){
+            return res.status(200).send({
+                message: "You are not authorized to access this route",
+                success: false
+            })
+        }
+        next()
+    } catch (error) {
+        return res.status(500).send({
+            message: "Server error in doctorauth",
+            success: false
+        })
+    }
+    
+}
+
+
+function adminAuth(req,res, next){
+    try {
+        if(req.body.myRole!=='admin'){
+            return res.status(200).send({
+                message: "You are not authorized to access this route",
+                success: false
+            })
+        }
+        next()
+    } catch (error) {
+        return res.status(500).send({
+            message: "Server error in doctorauth",
+            success: false
+        })
+    }
+    
+}
+
+
+
+
+module.exports = {authMiddleware, doctorAuth, userAuth, adminAuth}
