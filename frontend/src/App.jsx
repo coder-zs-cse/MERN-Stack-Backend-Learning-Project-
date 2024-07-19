@@ -23,6 +23,7 @@ import Assistant from "./components/Assistant.jsx";
 import AdminAssistantPage from "./pages/admin/adminAssistant.jsx";
 import DoctorProfile from "./pages/doctor/profile/DoctorProfile.jsx";
 import DoctorList from "./pages/user/doctorList.jsx";
+import NotAuthorized from "./pages/notAuthorized.jsx";
 function App() {
   return (
     <>
@@ -43,7 +44,7 @@ function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['user','admin']}>
                 <Layout>
                   <Profile />
                 </Layout>
@@ -53,7 +54,7 @@ function App() {
           <Route
             path="/doctors"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['user']}>
                 <Layout>
                   <DoctorList />
                 </Layout>
@@ -68,18 +69,18 @@ function App() {
               </PublicRoutes>
             }
           />
-          <Route
+          {/* <Route
             path="/temp"
             element={
               <FirebaseAuth>
                 <Assistant role="client" />
               </FirebaseAuth>
             }
-          />
+          /> */}
           <Route
             path="/doctor/profile"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['doctor']}>
                 <Layout>
                   <DoctorProfile />
                 </Layout>
@@ -107,7 +108,7 @@ function App() {
           <Route
             path="/admin/users"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['admin']}>
                 <Layout>
                   <Users />
                 </Layout>
@@ -117,7 +118,7 @@ function App() {
           <Route
             path="/admin/newsletter"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['admin']}>
                 <Layout>
                   <Newsletter />
                 </Layout>
@@ -127,13 +128,19 @@ function App() {
           <Route
             path="/admin/assistant"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={['admin']}>
                 <Layout>
                   <FirebaseAuth>
                     <AdminAssistantPage />
                   </FirebaseAuth>
                 </Layout>
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/not-authorised"
+            element={
+              <NotAuthorized />
             }
           />
         </Routes>

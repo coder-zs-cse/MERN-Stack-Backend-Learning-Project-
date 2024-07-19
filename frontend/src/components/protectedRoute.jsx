@@ -5,7 +5,7 @@ const backendURL = import.meta.env.VITE_BACKEND_URL;
 import { useEffect, useState} from "react";
 import Loading from "./loading.jsx";
 
-function ProtectedRoute(props) {
+function ProtectedRoute({children, allowedRoles=["any"]}) {
   const [loading, setLoading] = useState(true);
   const { user } = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -23,6 +23,10 @@ function ProtectedRoute(props) {
       );
       const data = await responseData.json();
       if (data.success) {
+        const role = data.data.role;
+        if (allowedRoles[0] !== "any" && !allowedRoles.includes(role)) {
+          navigate("/not-authorised");
+        }
         console.log("user data inside protected route",data.data);
         await dispatch(setUser(data.data));
       } else {
@@ -43,7 +47,7 @@ function ProtectedRoute(props) {
   }, [user]);
 
   if (localStorage.getItem("token")) {
-    return <>{loading ? <Loading /> : props.children }</>;
+    return <>{loading ? <Loading /> : children}</>;
   } else {
     return <Navigate to="/login" />;
   }
