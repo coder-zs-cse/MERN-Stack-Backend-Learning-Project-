@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 
 const doctorDetailsSchema = new mongoose.Schema({
-  designation: String,
-  experience: Number,
-  clinicName: String,
-  costOfCharge: Number,
-  timings: String,
+  designation: { type: String, default: "" },
+  experience: { type: Number, default: null }, // Using 0 for number type
+  clinicName: { type: String, default: "" },
+  costOfCharge: { type: Number, default: null }, // Using 0 for number type
+  timings: { type: String, default: "" },
 });
 const userSchema = new mongoose.Schema(
   {
@@ -50,6 +50,13 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre('save', function(next) {
+  if (this.isModified('role') && this.role === 'doctor' && !this.doctorDetails) {
+    this.doctorDetails = {}
+  }
+  next();
+});
 
 userSchema.methods.createResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");

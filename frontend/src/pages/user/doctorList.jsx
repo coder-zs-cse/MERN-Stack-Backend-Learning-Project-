@@ -19,8 +19,6 @@ function DoctorList() {
           },
         }
       );
-      // console.log(response.data.data);
-
       setDoctorList(response.data.data);
     } catch (error) {
       console.log(error);

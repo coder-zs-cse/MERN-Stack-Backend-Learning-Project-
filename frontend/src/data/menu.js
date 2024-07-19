@@ -7,7 +7,7 @@ const userMenu = [
   {
     name: "Find a Doctor",
     path: "/doctors",
-    icon: "ri-file-list-line mt-auto mb-auto ",
+    icon: "ri-search-line mt-auto mb-auto ",
   },
   {
     name: "My Appointments",

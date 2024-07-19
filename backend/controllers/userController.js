@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 exports.userInfoController = async (req, res) => {
   try {
@@ -20,7 +21,7 @@ exports.userInfoController = async (req, res) => {
         role: user.role,
         // role: req.body.role,
       };
-      if(output.role === "doctor"){
+      if (output.role === "doctor") {
         output["doctorDetails"] = user.doctorDetails;
       }
 
@@ -80,7 +81,6 @@ exports.updateUserProfileController = async (req, res) => {
   }
 };
 
-
 exports.subscribeNewsletterController = async (req, res) => {
   try {
     let Model = User;
@@ -91,7 +91,7 @@ exports.subscribeNewsletterController = async (req, res) => {
         success: false,
       });
     } else {
-      if(user.newsletterSubscription==true){
+      if (user.newsletterSubscription == true) {
         return res.status(200).send({
           success: false,
           message: "Already subscribed to newsletter",
@@ -106,16 +106,13 @@ exports.subscribeNewsletterController = async (req, res) => {
         message: "Subscribed to newsletter successfully",
       });
     }
-  }
-  catch (error) {
+  } catch (error) {
     return res.status(500).send({
       message: "Error subscribing to newsletter",
       success: false,
     });
   }
-}
-
-
+};
 
 exports.getListOfDoctorsController = async (req, res) => {
   try {
@@ -131,4 +128,100 @@ exports.getListOfDoctorsController = async (req, res) => {
       success: false,
     });
   }
+};
+
+exports.getDoctorDetailsById = async (req, res) => {
+  try {
+    const doctor = await User.findById(req.params.id);
+    if (!doctor || doctor.role !== "doctor") {
+      return res.status(200).send({
+        message: "Doctor not found",
+        success: false,
+      });
+    }
+    return res.status(200).send({
+      message: "Doctor details fetched successfully",
+      success: true,
+      data: doctor,
+    });
+  } catch (error) {
+    console.log("okk");
+    return res.status(500).send({
+      message: "Error fetching list of doctors",
+      success: false,
+    });
+  }
+};
+
+exports.createPaymentSessionController = async (req, res) => {
+
+  const { doctorName, doctorFee, appointmentDetails } = req.body;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: "Doctor Appointment",
+              description: `Appointment with Dr. ${doctorName} on ${appointmentDetails.appointmentDateTime}`,
+            },
+            unit_amount: doctorFee * 100, // Amount in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${process.env.BASE_URL}/api/v1/user/payment/complete?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.BASE_URL}/api/v1/user/payment/cancel`,
+    });
+    console.log(session.url);
+    // res.redirect(session.url);
+    
+    res.send({
+      sessionId: session.id,
+      url: session.url,
+      success: true,
+      message: "Payment session created successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      success: false,
+      message: "Error creating payment session",
+    });
+  }
+};
+
+exports.paymentCompleteController = async (req, res) => {
+  const result = Promise.all([
+    stripe.checkout.sessions.retrieve(req.query.session_id, {
+      expand: ["payment_intent.payment_method"],
+    }),
+    stripe.checkout.sessions.listLineItems(req.query.session_id),
+  ]);
+  
+  console.log(JSON.stringify(await result));
+  
+  res.send("Your payment was successful");
+};
+
+
+
+exports.paymentCancelController = async (req, res) => {
+  res.send('Cancelled')
 }
+
+// exports.createPaymentSessionController = async (req, res) => {
+
+//   console.log("ok");
+//   try {
+    
+//     return res.send("okk");
+//     res.json({ url: session.url });
+//   } catch (error) {
+//     console.error("Error creating checkout session:", error);
+//     res.status(500).json({ error: "Failed to create checkout session" });
+//   }
+// };

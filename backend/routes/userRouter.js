@@ -1,6 +1,6 @@
 const express = require("express");
 const { registerController, loginController,forgotPasswordController, resetPasswordController, googleLoginController, facebookLoginController, googleRegisterController, facebookRegisterController } = require("../controllers/authController");
-const { userInfoController,updateUserProfileController, subscribeNewsletterController, getListOfDoctorsController } = require("../controllers/userController");
+const { userInfoController,updateUserProfileController, subscribeNewsletterController, getListOfDoctorsController, getDoctorDetailsById, createPaymentSessionController, paymentCompleteController, paymentCancelController } = require("../controllers/userController");
 const router = express.Router();
 const {authMiddleware,userAuth} = require('../middleware/authMiddleware');
 
@@ -28,5 +28,12 @@ router.post('/subscribe-newsletter',subscribeNewsletterController)
 
 router.get('/list-of-doctors',authMiddleware,userAuth,getListOfDoctorsController)
 
+router.get('/doctor-detail-by-id/:id',authMiddleware,userAuth,getDoctorDetailsById)
+
+router.post('/create-payment-session',authMiddleware,userAuth,createPaymentSessionController)
+
+router.get('/payment/complete',paymentCompleteController)
+
+router.get('/payment/cancel',paymentCancelController)
 
 module.exports = router

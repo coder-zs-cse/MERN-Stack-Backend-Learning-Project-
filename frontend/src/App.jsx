@@ -9,6 +9,7 @@ import { Login } from "./pages/login.jsx";
 import { Register } from "./pages/register.jsx";
 import { ProtectedRoute } from "./components/protectedRoute.jsx";
 import { PublicRoutes } from "./components/publicRoute.jsx";
+import Temp from "./pages/temp.jsx";
 import ForgotPassword from "./components/forgotPassword.jsx";
 import { Toaster } from "react-hot-toast";
 import Landing from "./pages/landing.jsx";
@@ -24,6 +25,7 @@ import AdminAssistantPage from "./pages/admin/adminAssistant.jsx";
 import DoctorProfile from "./pages/doctor/profile/DoctorProfile.jsx";
 import DoctorList from "./pages/user/doctorList.jsx";
 import NotAuthorized from "./pages/notAuthorized.jsx";
+import DoctorAppointment from "./pages/user/doctorAppointment.jsx";
 function App() {
   return (
     <>
@@ -62,6 +64,16 @@ function App() {
             }
           />
           <Route
+            path="/doctors/:id"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <Layout>
+                  <DoctorAppointment />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/login"
             element={
               <PublicRoutes>
@@ -69,14 +81,12 @@ function App() {
               </PublicRoutes>
             }
           />
-          {/* <Route
+          <Route
             path="/temp"
             element={
-              <FirebaseAuth>
-                <Assistant role="client" />
-              </FirebaseAuth>
+                <Temp />
             }
-          /> */}
+          />
           <Route
             path="/doctor/profile"
             element={
