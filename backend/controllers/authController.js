@@ -5,6 +5,7 @@ const sendEmail = require("../utils/email");
 const crypto = require("crypto");
 const axios = require("axios");
 const { OAuth2Client } = require("google-auth-library");
+const { log } = require("console");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -17,7 +18,7 @@ const signToken = async (id, myRole) => {
 
 exports.registerController = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, role } = req.body;
     const Model = User;
 
     const userExist = await Model.findOne({ email });
@@ -34,6 +35,7 @@ exports.registerController = async (req, res) => {
       email,
       password: hashedPassword,
       name,
+      role
     });
 
     await newUser.save();
@@ -170,17 +172,11 @@ exports.googleLoginController = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (!user) {
-      // Create new user if doesn't exist
-      user = new User({
-        email,
-        name,
-        authProvider: "google",
-        role
-      });
-      await user.save();
+      return res.status(200).send({
+        message: "User not found",
+        success: false,
+      });      
     }
-    // console.log("user",user);
-    // Generate JWT or session for the user
     const jwtToken = await signToken(user._id, user.role);
     return res.status(200).send({
       message: "Google Signin successfull",
@@ -205,14 +201,10 @@ exports.facebookLoginController = async (req, res) => {
     let user = await User.findOne({ email });
     
     if (!user) {
-      // Create new user if doesn't exist
-      user = new User({
-        email,
-        name,
-        authProvider: 'facebook',
-        facebookId: id,
+      return res.status(200).send({
+        message: "User not found",
+        success: false,
       });
-      await user.save();
     }
     
     // Generate JWT or session for the user
@@ -221,6 +213,79 @@ exports.facebookLoginController = async (req, res) => {
       message: "Facebook Signin successfull",
       success: true,
       data: { token: jwtToken },
+    });
+  } catch (error) {
+    console.error('Error verifying Facebook token:', error);
+    return res.status(401).json({ error: 'Authentication failed' });
+  }
+
+    // Generate JWT or session for the user
+  
+};
+
+
+exports.googleRegisterController = async (req, res) => {
+
+  const { token, role } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { email, name } = ticket.getPayload();
+
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(200).send({
+        message: "User already exists",
+        success: false,
+      });      
+    }
+    user = new User({
+      email,
+      name,
+      role,
+      authProvider: 'google'
+    });
+    await user.save();
+    return res.status(200).send({
+      message: "Google Signup successfull",
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error verifying Google token:", error);
+    return res.status(401).json({ error: "Authentication failed" });
+  }
+};
+
+exports.facebookRegisterController = async (req, res) => {
+  const { token } = req.body;
+  try {
+    // Verify the Facebook access token
+    const response = await axios.get(`https://graph.facebook.com/me?fields=id,name,email&access_token=${token}`);
+    // console.log(response);
+    const { id, name, email } = response.data;
+    
+    // Check if user exists
+    let user = await User.findOne({ email });
+    
+    if (user) {
+      return res.status(200).send({
+        message: "User already exists",
+        success: false,
+      });
+    }
+    user = new User({
+      email,
+      name,
+      role,
+      authProvider: 'google'
+    });
+    await user.save();
+    
+    return res.status(200).send({
+      message: "Facebook Signup successfull",
+      success: true,
     });
   } catch (error) {
     console.error('Error verifying Facebook token:', error);

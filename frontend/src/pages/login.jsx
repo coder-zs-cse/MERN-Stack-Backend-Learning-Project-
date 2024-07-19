@@ -44,14 +44,19 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${backendURL}/api/v1/user/auth/${provider}`,
+        `${backendURL}/api/v1/user/auth/login/${provider}`,
         {
           token: accessToken,
         }
       );
       // console.log("token: ",response.data.data.token);
-      localStorage.setItem("token", response.data.data.token);
-      navigate("/home");
+      if(response.data.success === false){
+        toast.error(response.data.message);
+      }
+      else{
+        localStorage.setItem("token", response.data.data.token);
+        navigate("/home");
+      }
     } catch (err) {
       console.log(err);
     }

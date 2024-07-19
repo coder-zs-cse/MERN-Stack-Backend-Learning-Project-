@@ -25,8 +25,7 @@ const Register = () => {
       );
       // console.log(response);
       if (response.data.success == true) {
-        toast.success("User created successfully");
-        toast("Redirecting to home page");
+        toast.success(response.data.message);
         navigate("/login");
       } else {
         toast.error(response.data.message);
@@ -47,19 +46,22 @@ const Register = () => {
       const token = accessTokenProvider[0];
       const provider = accessTokenProvider[1];
       const response = await axios.post(
-        `${backendURL}/api/v1/user/auth/${provider}`,
+        `${backendURL}/api/v1/user/auth/register/${provider}`,
         {
           token: token,
           role,
         }
       );
-      // console.log("token: ", response.data.data.token);
-      localStorage.setItem("token", response.data.data.token);
-      navigate("/home");
+      if (response.data.success === false) {
+        toast.error(response.data.message);
+      } else {
+        toast.success(response.data.message)
+        navigate("/login");
+      }
     } catch (err) {
       console.log(err);
     }
-    setLoading(false)
+    setLoading(false);
   }
   return (
     <>
@@ -100,9 +102,9 @@ const Register = () => {
                         setShowRoleSelection(false);
                         setAccessTokenProvider([]);
                       }}
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                      className="font-medium text-indigo-600 hover:text-indigo-500"
                     >
-                        Go back to register page
+                      Go back to register page
                     </button>
                   </p>
                 </div>
