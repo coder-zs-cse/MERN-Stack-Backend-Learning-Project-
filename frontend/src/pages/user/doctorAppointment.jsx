@@ -48,7 +48,7 @@ const DoctorAppointment = () => {
       
       // Create a checkout session
       const response = await axios.post(
-        `${backendURL}/api/v1/user/create-payment-session`,
+        `${backendURL}/api/v1/stripe/create-payment-session`,
         {
           doctorId: id,
           doctorName: doctor.name,
@@ -62,7 +62,6 @@ const DoctorAppointment = () => {
         }
       );
       if(response.data.success){
-        console.log("done",response.data.url);
         
         window.location.href = response.data.url;
       }

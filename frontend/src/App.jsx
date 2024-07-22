@@ -26,6 +26,8 @@ import DoctorProfile from "./pages/doctor/profile/DoctorProfile.jsx";
 import DoctorList from "./pages/user/doctorList.jsx";
 import NotAuthorized from "./pages/notAuthorized.jsx";
 import DoctorAppointment from "./pages/user/doctorAppointment.jsx";
+import Appointments from "./pages/user/Appointments.jsx";
+import ProcessingPaymentPage from "./pages/payment/processingPayment.jsx";   
 function App() {
   return (
     <>
@@ -69,6 +71,26 @@ function App() {
               <ProtectedRoute allowedRoles={['user']}>
                 <Layout>
                   <DoctorAppointment />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointments/"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <Layout>
+                  <Appointments />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/processing-payment/"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <Layout>
+                  <ProcessingPaymentPage />
                 </Layout>
               </ProtectedRoute>
             }

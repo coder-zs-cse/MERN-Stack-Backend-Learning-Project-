@@ -98,7 +98,6 @@ function Landing() {
               <FirebaseAuth>
                 <Assistant role="client" />
               </FirebaseAuth>
-              koo
             </div>
           </main>
 

@@ -5,6 +5,7 @@ const doctorRouter = require('./routes/doctorRouter')
 const app = express()
 const userRouter = require('./routes/userRouter')
 const adminRouter = require('./routes/adminRouter')
+const stripeRouter = require('./routes/stripeRouter')
 const cors = require("cors")
 const port = process.env.port || 5000
 
@@ -14,6 +15,7 @@ app.use(express.json())
 app.use('/api/v1/user/',userRouter)
 app.use('/api/v1/admin/',adminRouter)
 app.use('/api/v1/doctor/',doctorRouter)
+app.use('/api/v1/stripe/',stripeRouter)
 
 app.use((err, req, res, next) => {
     err.statusCode = err.statusCode || 500;

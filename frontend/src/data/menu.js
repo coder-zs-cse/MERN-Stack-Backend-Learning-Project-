@@ -11,7 +11,7 @@ const userMenu = [
   },
   {
     name: "My Appointments",
-    path: "/user-appointments",
+    path: "/appointments",
     icon: "ri-file-list-line mt-auto mb-auto",
   },
   {

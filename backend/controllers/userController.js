@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
+const Appointment = require("../models/appointmentModel");
 exports.userInfoController = async (req, res) => {
   try {
     let Model = User;
@@ -153,71 +153,31 @@ exports.getDoctorDetailsById = async (req, res) => {
   }
 };
 
-exports.createPaymentSessionController = async (req, res) => {
-
-  const { doctorName, doctorFee, appointmentDetails } = req.body;
+exports.myAppointmentsController = async (req, res) => {
   try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "inr",
-            product_data: {
-              name: "Doctor Appointment",
-              description: `Appointment with Dr. ${doctorName} on ${appointmentDetails.appointmentDateTime}`,
-            },
-            unit_amount: doctorFee * 100, // Amount in cents
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${process.env.BASE_URL}/api/v1/user/payment/complete?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.BASE_URL}/api/v1/user/payment/cancel`,
-    });
-    console.log(session.url);
-    // res.redirect(session.url);
-    
-    res.send({
-      sessionId: session.id,
-      url: session.url,
+    const userId = req.body.userId;
+    const appointments = await Appointment.find({ userId })
+      .populate("doctorId", "name email doctorDetails")
+      .sort({ appointmentDateTime: -1 });
+    // console.log(appointments);
+    res.json({
       success: true,
-      message: "Payment session created successfully",
+      data: { appointments },
     });
   } catch (error) {
-    console.log(error);
-    res.send({
+    console.error("Error fetching appointments:", error);
+    res.status(500).json({
       success: false,
-      message: "Error creating payment session",
+      message: "Error fetching appointments",
     });
   }
 };
-
-exports.paymentCompleteController = async (req, res) => {
-  const result = Promise.all([
-    stripe.checkout.sessions.retrieve(req.query.session_id, {
-      expand: ["payment_intent.payment_method"],
-    }),
-    stripe.checkout.sessions.listLineItems(req.query.session_id),
-  ]);
-  
-  console.log(JSON.stringify(await result));
-  
-  res.send("Your payment was successful");
-};
-
-
-
-exports.paymentCancelController = async (req, res) => {
-  res.send('Cancelled')
-}
 
 // exports.createPaymentSessionController = async (req, res) => {
 
 //   console.log("ok");
 //   try {
-    
+
 //     return res.send("okk");
 //     res.json({ url: session.url });
 //   } catch (error) {
