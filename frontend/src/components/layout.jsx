@@ -1,100 +1,87 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { userMenu, adminMenu, doctorMenu, getMenuForRole } from "../data/menu";
+import { getMenuForRole } from "../data/menu";
 import { RiMenuLine, RiCloseLine } from "react-icons/ri";
 import { setUser } from "../redux/userSlice";
 
-
 function Layout({ children }) {
-  const dispatch = useDispatch()
-  
+  const dispatch = useDispatch();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useSelector((state) => state.user);
-
-  
 
   const menuToBeRendered = getMenuForRole(user?.role);
 
   const handleToggleSidebar = () => {
+    document.getElementsByClassName('rightbar')[0].classList.toggle('md:ml-64');
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
 
-  // Media query for responsive sidebar collapsing on smaller screens
-  const handleMediaQueryChange = (event) => {
-    setIsSidebarCollapsed(event.matches); // Collapse sidebar on small screens
-  };
-
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)"); // Adjust breakpoint as needed
-    mediaQuery.addListener(handleMediaQueryChange);
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setIsSidebarCollapsed(true);
+      } else {
+        setIsSidebarCollapsed(false);
+      }
+    };
 
-    // Cleanup function to remove event listener on unmount
-    return () => mediaQuery.removeListener(handleMediaQueryChange);
-  }, [user]);
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Call once to set initial state
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
-    <div className="main h-screen p-3">
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
 
-      <div className="flex h-full">
-        <div
-          className={`sidebar bg-blue-500 rounded mr-3 p-3 w-64 overflow-hidden transition duration-200 ease-in-out ${
-            isSidebarCollapsed ? "hidden md:block" : "block"
-          }`} // Tailwind classes for responsiveness
-        >
-          <div className="flex justify-center items-center border-b border-white/20">
-            <div className="text-white sidebar-header flex items-center gap-4 py-6 px-8 text-xl">
-              DASHBOARD
-            </div>
+      <aside className={`bg-blue-500 text-white w-64 flex-shrink-0 transition-all duration-300 ease-in-out fixed h-full z-10 ${isSidebarCollapsed ? '-translate-x-full' : 'translate-x-0'}`}>
+        <div className="flex flex-col h-full">
+          <div className="flex justify-center items-center border-b border-white/20 py-6 px-8">
+            <h1 className="text-xl font-bold">DASHBOARD</h1>
           </div>
-          <div className="menu text-white mt-5">
+          <nav className="flex-grow overflow-y-auto">
             {menuToBeRendered.map((menuItem) => (
-              <div className="flex" key={menuItem.name}>
-                <i className={menuItem.icon}></i>
-                <Link
-                  to={menuItem.path}
-                  className="text-white ml-2 no-underline mb-3 mt-3"
-                >
-                  {menuItem.name}
-                </Link>
-              </div>
+              <Link
+                key={menuItem.name}
+                to={menuItem.path}
+                className="flex items-center px-6 py-3 text-white no-underline hover:bg-blue-600"
+              >
+                <i className={`${menuItem.icon} mr-3`}></i>
+                {menuItem.name}
+              </Link>
             ))}
-            <div
-              className="flex"
-              onClick={async () => {
+            <Link
+              to="/login"
+              className="flex items-center px-6 py-3 text-white no-underline hover:bg-blue-600"
+              onClick={() => {
                 localStorage.clear();
                 dispatch(setUser(null));
               }}
             >
-              <i className="ri-logout-box-r-line self-center"></i>
-              <Link
-                to="/login"
-                className="text-white ml-2 no-underline mb-3 mt-3"
-              >
-                Logout
-              </Link>
-            </div>
-          </div>
+              <i className="ri-logout-box-r-line mr-3"></i>
+              Logout
+            </Link>
+          </nav>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 flex flex-col overflow-hidden md:ml-64 rightbar">
+        <header className="bg-white shadow-md p-4 flex items-center ">
           <button
-            className={`transition duration-200 ease-in-out absolute top-0 left-0 mt-4 ml-4 p-2 rounded-full focus:outline-none ${
-              isSidebarCollapsed
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-blue-500"
-            }`}
             onClick={handleToggleSidebar}
+            className="text-blue-500 focus:outline-none "
           >
-            {isSidebarCollapsed ? <RiCloseLine /> : <RiMenuLine />}
+            {isSidebarCollapsed ? <RiMenuLine size={24} /> : <RiCloseLine size={24} />}
           </button>
-        </div>
-        <div className="content rounded flex-grow">
-          <div
-            className="header bg-white flex justify-center items-center shadow-outline border shadow-md rounded mt-1 p-3"
-            style={{ height: "7vh" }}
-          >
-            Intern SE Onboarding Project
-          </div>
-          <div className="body w-full h-full ">{children}</div>
-        </div>
+          <h2 className="text-xl font-semibold text-center mx-auto">Intern SE Onboarding Project</h2>
+        </header>
+
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4">
+          {children}
+        </main>
       </div>
     </div>
   );

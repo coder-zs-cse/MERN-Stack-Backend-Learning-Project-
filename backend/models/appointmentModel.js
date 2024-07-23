@@ -18,8 +18,8 @@ const appointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["scheduled", "completed", "cancelled"],
-    default: "scheduled",
+    enum: ["initiated", "scheduled", "cancelled"],
+    default: "initiated",
   },
   transactionInfo: {
     sessionId: String,
@@ -67,7 +67,7 @@ async function processPayments () {
     const paymentInitiatedAt = appointment.transactionInfo.paymentInitiatedAt;
     const currentTime = new Date();
     const timeDifference = currentTime - paymentInitiatedAt;
-    const timeoutThreshold =  60 * 1000; // 10 minutes
+    const timeoutThreshold =  30 * 1000; // 10 minutes
 
     console.log('Processing payment for appointment:', appointment._id, 'Time difference:', timeDifference);
 
@@ -79,3 +79,4 @@ async function processPayments () {
     }
   }
 };
+

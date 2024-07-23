@@ -28,7 +28,7 @@ exports.createPaymentSessionController = async (req, res) => {
       userId,
       doctorId, 
       appointmentDateTime: new Date(appointmentDetails.appointmentDateTime),
-      status: "scheduled",
+      status: "initiated",
       transactionInfo: {
         sessionId: session.id,
         amount: doctorFee, 
@@ -114,7 +114,7 @@ async function handleSuccessfulPayment(session) {
     }
 
     appointment.transactionInfo.paymentStatus = 'succeeded';
-    appointment.status = 'completed';
+    appointment.status = 'scheduled';
     await appointment.save();
 
     // Here you might want to send a confirmation email to the user and doctor

@@ -158,7 +158,7 @@ exports.myAppointmentsController = async (req, res) => {
     const userId = req.body.userId;
     const appointments = await Appointment.find({ userId })
       .populate("doctorId", "name email doctorDetails")
-      .sort({ appointmentDateTime: -1 });
+      .sort({ createdAt: -1 });
     // console.log(appointments);
     res.json({
       success: true,
@@ -169,6 +169,32 @@ exports.myAppointmentsController = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error fetching appointments",
+    });
+  }
+};
+
+exports.upcomingAppointmentController = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const appointment = await Appointment.findOne({
+      userId,
+      status: "scheduled",
+    }).populate("doctorId", "name email doctorDetails");
+    if (!appointment) {
+      return res.json({
+        success: true,
+        data: { appointment: null },
+      });
+    }
+    res.json({
+      success: true,
+      data: { appointment },
+    });
+  } catch (error) {
+    console.error("Error fetching upcoming appointment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching upcoming appointment",
     });
   }
 };
