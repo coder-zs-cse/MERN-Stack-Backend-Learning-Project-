@@ -309,6 +309,34 @@ exports.deleteTicketController = async(req,res)=>{
     });
   }
 }
+
+exports.userReplyTicketController = async (req,res)=>{
+  try {
+    const {ticketId, userId, message} = req.body;
+    const ticket = await Ticket.findById(ticketId);
+    if(!ticket){
+      return res.json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+    const reply = new TicketReply({
+      ticket: ticket._id,
+      userId,
+      message,
+    });
+    await reply.save();
+    res.json({
+      success: true,
+      data: { reply },
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: "Error replying to ticket",
+    });
+  }
+}
 // exports.createPaymentSessionController = async (req, res) => {
 
 //   console.log("ok");

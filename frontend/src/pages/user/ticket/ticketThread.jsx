@@ -14,7 +14,7 @@ const TicketThread = ({ ticketId, onBack }) => {
   useEffect(() => {
     const fetchTicketThread = async () => {
       try {
-        const response = axios.get(
+        const response = await axios.get(
           `${backendURL}/api/v1/user/ticket/${ticketId}/replies`,
           {
             headers: {
@@ -22,9 +22,9 @@ const TicketThread = ({ ticketId, onBack }) => {
             },
           }
         );
-        console.log(response.data);
-        // setTicket(ticketRes.data);
-        // setReplies(repliesRes.data);
+        const { ticket, replies } = response.data.data;
+        setTicket(ticket);
+        setReplies(replies);
       } catch (err) {
         console.error("Error fetching ticket thread:", err);
         setError("Failed to load ticket thread. Please try again.");
@@ -39,14 +39,15 @@ const TicketThread = ({ ticketId, onBack }) => {
   const handleSubmitReply = async (e) => {
     e.preventDefault();
     try {
+
       const res = await axios.post(
         `${backendURL}/api/v1/user/ticket/${ticketId}/reply`,
-        { message: newReply },
+        { ticketId, message: newReply },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      setReplies([...replies, res.data]);
+      setReplies([...replies, res.data.data.reply]);
       setNewReply("");
     } catch (err) {
       console.error("Error submitting reply:", err);
@@ -85,8 +86,8 @@ const TicketThread = ({ ticketId, onBack }) => {
         {replies.map((reply) => (
           <div
             key={reply._id}
-            className={`p-4 rounded-lg ${
-              reply.isAdmin ? "bg-gray-100" : "bg-blue-100"
+            className={`w-4/6 p-4 rounded-lg ${
+              reply.isAdmin ? "bg-gray-100 mr-auto" : "bg-blue-100 ml-auto"
             }`}
           >
             <div className="font-semibold mb-2">
