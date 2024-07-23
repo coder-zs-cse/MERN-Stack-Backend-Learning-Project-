@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import NotAuthorized from '../notAuthorized';
+import toast from 'react-hot-toast';
+import Loading from '../../components/loading';
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const ProcessingPaymentPage = () => {
   const [status, setStatus] = useState('processing');
   const navigate = useNavigate();
   const location = useLocation();
-  // return <div>working</div>
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const sessionId = searchParams.get('session_id');
@@ -23,18 +24,21 @@ const ProcessingPaymentPage = () => {
 
         if (response.data.status === 'succeeded') {
           setStatus('success');
-          setTimeout(() => navigate('/appointment-success'), 2000);
+          toast.success('Payment successful!');
+          toast('Redirecting to appointments page...');
+          setTimeout(() => navigate('/appointments'), 2000);
         } else if (response.data.status === 'failed') {
           setStatus('failed');
-          setTimeout(() => navigate('/appointment-failed'), 2000);
+          toast.error('Payment failed.');
+          toast('Redirecting to appointments page...');
+          setTimeout(() => navigate('/appointments'), 2000);
         } else {
-          // If still processing, check again after 2 seconds
           setTimeout(checkPaymentStatus, 2000);
         }
       } catch (error) {
         console.error('Error checking payment status:', error);
         setStatus('error');
-        setTimeout(() => navigate('/appointment-failed'), 2000);
+        // setTimeout(() => navigate('/appointments'), 2000);
       }
     };
 
@@ -42,11 +46,32 @@ const ProcessingPaymentPage = () => {
   }, [navigate, location]);
 
   return (
-    <div className="processing-payment">
-      {status === 'processing' && <p>Processing your payment. Please wait...</p>}
-      {status === 'success' && <p>Payment successful! Redirecting to confirmation page...</p>}
-      {status === 'failed' && <p>Payment failed. Redirecting to error page...</p>}
-      {status === 'error' && <p>An error occurred. Redirecting to error page...</p>}
+    <div className="flex items-center h-full justify-center bg-gray-100">
+        {status === 'processing' && (
+          <div className="text-center ">
+          <Loading />
+            <h2 className="text-2xl font-semibold mb-4 text-green-600">Payment processing</h2>
+            <p className="text-gray-600">Wait for some time</p>
+          </div>
+        )}
+        {status === 'success' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-green-600">Payment Successful!</h2>
+            <p className="text-gray-600">Redirecting to confirmation page...</p>
+          </div>
+        )}
+        {status === 'failed' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-red-600">Payment Failed</h2>
+            <p className="text-gray-600">Redirecting to error page...</p>
+          </div>
+        )}
+        {status === 'error' && (
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-4 text-red-600">An Error Occurred</h2>
+            <p className="text-gray-600">Redirecting to error page...</p>
+          </div>
+        )}
     </div>
   );
 };

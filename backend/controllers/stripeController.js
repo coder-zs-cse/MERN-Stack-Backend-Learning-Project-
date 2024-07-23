@@ -34,6 +34,7 @@ exports.createPaymentSessionController = async (req, res) => {
         amount: doctorFee, 
         currency: "inr",
         paymentStatus: "pending",
+        paymentInitiatedAt: new Date()
       },
     });
 
@@ -64,7 +65,9 @@ exports.checkPaymentStatusController = async (req, res) => {
       return res.status(404).json({ status: 'not_found' });
     }
 
-    res.json({ status: appointment.transactionInfo.paymentStatus });
+    const paymentStatus = appointment.transactionInfo.paymentStatus;
+
+    res.json({ status: paymentStatus });
   } catch (error) {
     console.error('Error checking payment status:', error);
     res.status(500).json({ status: 'error' });
@@ -110,8 +113,8 @@ async function handleSuccessfulPayment(session) {
       return;
     }
 
-    appointment.transactionInfo.paymentStatus = 'completed';
-    appointment.status = 'succeeded';
+    appointment.transactionInfo.paymentStatus = 'succeeded';
+    appointment.status = 'completed';
     await appointment.save();
 
     // Here you might want to send a confirmation email to the user and doctor

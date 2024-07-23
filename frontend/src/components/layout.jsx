@@ -93,7 +93,7 @@ function Layout({ children }) {
           >
             Intern SE Onboarding Project
           </div>
-          <div className="body w-full">{children}</div>
+          <div className="body w-full h-full ">{children}</div>
         </div>
       </div>
     </div>

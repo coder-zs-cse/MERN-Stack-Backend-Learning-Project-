@@ -22,7 +22,7 @@ const Appointments = () => {
         }
       );
       if (response.data.success) {
-        console.log("appointments",response.data.data.appointments);
+        console.log("appointments", response.data.data.appointments);
         setAppointments(response.data.data.appointments);
       } else {
         setError('Failed to fetch appointments');
@@ -35,31 +35,43 @@ const Appointments = () => {
     }
   };
 
-  if (loading) return <div>Loading appointments...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className="text-center py-4">Loading appointments...</div>;
+  if (error) return <div className="text-center py-4 text-red-500">Error: {error}</div>;
 
   return (
-    <div className="user-appointments">
-      <h2>Your Appointments</h2>
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6 text-center">Your Appointments</h2>
       {appointments.length === 0 ? (
-        <p>You have no appointments scheduled.</p>
+        <p className="text-center">You have no booked appointments.</p>
       ) : (
-        <ul>
-          {appointments.map((appointment) => (
-            <li key={appointment._id}>
-              <h3>Appointment with Dr. {appointment.doctorId.name}</h3>
-              <p>Specialization: {appointment.doctorId.doctorDetails.designation}</p>
-              <p>Date & Time: {new Date(appointment.appointmentDateTime).toLocaleString()}</p>
-              <p>Status: {appointment.status}</p>
-              <h4>Payment Information:</h4>
-              <p>Amount: {appointment.transactionInfo.amount} {appointment.transactionInfo.currency.toUpperCase()}</p>
-              <p>Payment Status: {appointment.transactionInfo.paymentStatus}</p>
-              {appointment.transactionInfo.paymentMethod && (
-                <p>Payment Method: {appointment.transactionInfo.paymentMethod}</p>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="py-3 px-4 text-left">Doctor</th>
+                <th className="py-3 px-4 text-left">Specialization</th>
+                <th className="py-3 px-4 text-left">Date & Time</th>
+                <th className="py-3 px-4 text-left">Status</th>
+                <th className="py-3 px-4 text-left">Amount</th>
+                <th className="py-3 px-4 text-left">Payment Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {appointments.map((appointment) => (
+                <tr key={appointment._id} className="hover:bg-gray-50">
+                  <td className="py-4 px-4">{appointment.doctorId.name}</td>
+                  <td className="py-4 px-4">{appointment.doctorId.doctorDetails.designation}</td>
+                  <td className="py-4 px-4">{new Date(appointment.appointmentDateTime).toLocaleString()}</td>
+                  <td className="py-4 px-4">{appointment.status}</td>
+                  <td className="py-4 px-4">
+                    {appointment.transactionInfo.amount} {appointment.transactionInfo.currency.toUpperCase()}
+                  </td>
+                  <td className="py-4 px-4">{appointment.transactionInfo.paymentStatus}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
