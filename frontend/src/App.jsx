@@ -15,6 +15,7 @@ import { Toaster } from "react-hot-toast";
 import Landing from "./pages/landing.jsx";
 import Profile from "./pages/profile.jsx";
 // import Temp from "./pages/temp.jsx";
+import Tickets from "./pages/user/ticket/Tickets.jsx";
 import FirebaseAuth from "./components/FirebaseAuth.jsx";
 
 import ResetPassword from "./components/resetPassword.jsx";
@@ -81,6 +82,16 @@ function App() {
               <ProtectedRoute allowedRoles={['user']}>
                 <Layout>
                   <Appointments />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/"
+            element={
+              <ProtectedRoute allowedRoles={['user']}>
+                <Layout>
+                  <Tickets />
                 </Layout>
               </ProtectedRoute>
             }

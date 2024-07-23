@@ -15,6 +15,11 @@ const userMenu = [
     icon: "ri-file-list-line mt-auto mb-auto",
   },
   {
+    name: "Support",
+    path: "/tickets",
+    icon: "ri-customer-service-2-line mt-auto mb-auto",
+  },
+  {
     name: "Profile",
     path: "/profile",
     icon: "ri-user-line mt-auto mb-auto",

@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/email");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Appointment = require("../models/appointmentModel");
+const {Ticket, TicketReply } = require("../models/ticketModel");
 exports.userInfoController = async (req, res) => {
   try {
     let Model = User;
@@ -199,6 +200,115 @@ exports.upcomingAppointmentController = async (req, res) => {
   }
 };
 
+exports.createTicketController = async(req,res)=>{
+  try {
+    const {userId,subject,description, category} = req.body;
+    const ticket = new Ticket({
+      userId,
+      subject,
+      description,
+      category
+    });
+    await ticket.save();
+    res.json({
+      success: true,
+      data: { ticket },
+    });
+  } catch (error) {
+    console.error("Error creating ticket:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error creating ticket",
+    });
+  }
+}
+
+exports.getTicketController = async(req,res)=>{
+  try{
+    const tickets = await Ticket.find({userId: req.body.userId}).sort({createdAt: -1});
+    res.json({
+      success: true,
+      data: { tickets },
+    });
+  }
+  catch(error){
+    console.error("Error fetching tickets:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching tickets",
+    });
+  }
+}
+
+
+exports.getTicketInfoController = async(req,res)=>{
+  try {
+    const ticket = await Ticket.findById(req.params.ticketId);
+    if(!ticket){
+      return res.json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+    res.json({
+      success: true,
+      data: { ticket },
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: "Error fetching ticket",
+    });
+  }
+}
+
+
+exports.getTicketThreadController = async(req,res)=>{
+  try {
+    const ticket = await Ticket.findById(req.params.ticketId);
+    if(!ticket){
+      return res.json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+    const replies = await TicketReply.find({ticket: ticket._id}).sort({createdAt: 1});
+    res.json({
+      success: true,
+      data: { ticket, replies },
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: "Error fetching ticket thread",
+    });
+  }
+}
+
+exports.deleteTicketController = async(req,res)=>{
+  try {
+    const ticket = await Ticket.findById(req.params.ticketId);  
+    if(!ticket){
+      return res.json({
+        success: false,
+        message: "Ticket not found",
+      });
+    }
+    await TicketReply.deleteMany({ ticket: ticket._id });
+    // Now delete the ticket itself
+    await Ticket.deleteOne({ _id: ticket._id });
+    // removing all replies
+    res.json({
+      success: true,
+      message: "Ticket deleted successfully",
+    });
+  } catch (error) {
+    res.send({
+      success: false,
+      message: "Error deleting ticket",
+    });
+  }
+}
 // exports.createPaymentSessionController = async (req, res) => {
 
 //   console.log("ok");

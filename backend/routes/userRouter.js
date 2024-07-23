@@ -1,8 +1,9 @@
 const express = require("express");
 const { registerController, loginController,forgotPasswordController, resetPasswordController, googleLoginController, facebookLoginController, googleRegisterController, facebookRegisterController } = require("../controllers/authController");
-const { userInfoController,updateUserProfileController, subscribeNewsletterController, getListOfDoctorsController, getDoctorDetailsById, myAppointmentsController, upcomingAppointmentController } = require("../controllers/userController");
+const { userInfoController,updateUserProfileController, subscribeNewsletterController, getListOfDoctorsController, getDoctorDetailsById, myAppointmentsController, upcomingAppointmentController, createTicketController, getTicketController, getTicketInfoController, getTicketThreadController, deleteTicketController } = require("../controllers/userController");
 const router = express.Router();
 const {authMiddleware,userAuth} = require('../middleware/authMiddleware');
+const { auth } = require("google-auth-library");
 
 router.post('/register',registerController)
 
@@ -34,4 +35,13 @@ router.get('/my-appointments',authMiddleware,userAuth,myAppointmentsController)
 
 router.get('/upcoming-appointment',authMiddleware,userAuth,upcomingAppointmentController)
 
+router.post('/create-ticket',authMiddleware,userAuth,createTicketController)
+
+router.get('/get-tickets',authMiddleware,userAuth,getTicketController)
+
+router.get('/ticket/get-ticket-by-id/:ticketId',authMiddleware,userAuth,getTicketInfoController)
+
+router.get('/ticket/:ticketId/replies',authMiddleware,userAuth,getTicketThreadController)
+
+router.delete('/ticket/:ticketId',authMiddleware,userAuth,deleteTicketController)
 module.exports = router
