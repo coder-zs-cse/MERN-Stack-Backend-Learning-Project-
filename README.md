@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/6ed520da-7879-4de6-a951-b4a5bff72abd)# Doctor Consultation Appointment Booking System
+# Doctor Consultation Appointment Booking System
 
 #### Frontend: React, Redux, TailwindCSS
 
