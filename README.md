@@ -1,4 +1,4 @@
-# Student Teacher 1:1 Appointment Booking System
+# Doctor Consultation Appointment Booking System
 
 #### Frontend: React, Redux, TailwindCSS
 
