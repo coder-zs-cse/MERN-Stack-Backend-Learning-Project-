@@ -96,4 +96,34 @@ Let us look up the UI of our application.
 
 ## Book Appointment
 
+  ![Screenshot (1492)](https://github.com/user-attachments/assets/435ce845-9c69-4d2a-b356-684f8af6e79f)
 
+## Put card details for payment
+- Stripe used for payment integration. webhook is created in the backend which listens for events from Stripe. Thus a API call from Stripe marks the completion of payment. If no event is received, then a cron schedular is employed who will cancel the payment after recovery.
+  ![Screenshot (1493)](https://github.com/user-attachments/assets/a343973b-41e1-4c31-8400-3c8311df25d4)
+
+  ![Screenshot (1494)](https://github.com/user-attachments/assets/6a6a6d42-f8a3-4eb1-816e-1a7b834da0fe)
+
+## My appointments list
+- List of all appointment booking with status of schedule and payment.
+  ![Screenshot (1495)](https://github.com/user-attachments/assets/12c33419-bb6b-4c13-b0b5-fc76f42f57ba)
+
+## Support/ Ticket feature
+- Users can raise a complain or request for feature.
+  ![Screenshot (1489)](https://github.com/user-attachments/assets/0ed37276-453e-4a99-a81d-092afa2729f5)
+
+  ![Screenshot (1490)](https://github.com/user-attachments/assets/41b5d9fe-0c93-4e5f-9fff-d4dcca2b53d1)
+
+## Profile Page
+  
+  ![Screenshot (1491)](https://github.com/user-attachments/assets/0dee0df3-16dd-484a-b7be-beb4cb09f844)
+  
+  ![Screenshot (1496)](https://github.com/user-attachments/assets/f6b1de71-aa2b-472a-9165-175b99e12918)
+ 
+  ![Screenshot (1497)](https://github.com/user-attachments/assets/454a2004-5e9f-47f2-9ca0-ce7c66da5d9e)
+
+## Admin Portal
+
+  ![Screenshot (1498)](https://github.com/user-attachments/assets/dfcc6f7f-b338-4002-a64b-e51bf7fbcec0)
+
+  ![Screenshot (1499)](https://github.com/user-attachments/assets/c3bb27d3-a6c7-4cdb-b05e-47b38c7b61d6)
